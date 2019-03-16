@@ -1,14 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using SC.DevChallenge.Api.MediatorRequests;
+using SC.DevChallenge.Db.Contexts;
+using SC.DevChallenge.Db.Repositories;
+using SC.DevChallenge.Db.Repositories.Contracts;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace SC.DevChallenge.Api
 {
@@ -20,11 +26,68 @@ namespace SC.DevChallenge.Api
         }
 
         public IConfiguration Configuration { get; }
+        public IContainer ApplicationContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+
+                var filePath = Path.Combine(AppContext.BaseDirectory, "SC.DevChallenge.Api.xml");
+                c.IncludeXmlComments(filePath);
+            });
+
+            services.AddDbContext<AppDbContext>(optionsBuilder =>
+            {
+                optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            var builder = new ContainerBuilder();
+
+            builder.RegisterGeneric(typeof(DbRepository<>))
+                .As(typeof(IDbRepository<>));
+
+            builder.Populate(services);
+
+            builder.RegisterType<Mediator>()
+                .As<IMediator>()
+                .InstancePerLifetimeScope();
+
+            var mediatrOpenTypes = new[]
+            {
+                typeof(IRequestHandler<,>),
+                typeof(INotificationHandler<>),
+            };
+
+            foreach (var mediatrOpenType in mediatrOpenTypes)
+            {
+                builder
+                    .RegisterAssemblyTypes(typeof(SimpleRequest).GetTypeInfo().Assembly)
+                    .AsClosedTypesOf(mediatrOpenType)
+                    .AsImplementedInterfaces();
+            }
+
+            // request handlers
+            builder.Register<ServiceFactory>(context =>
+            {
+                var c = context.Resolve<IComponentContext>();
+                return t => c.Resolve(t);
+            });
+
+            // finally register our custom code (individually, or via assembly scanning)
+            // - requests & handlers as transient, i.e. InstancePerDependency()
+            // - pre/post-processors as scoped/per-request, i.e. InstancePerLifetimeScope()
+            // - behaviors as transient, i.e. InstancePerDependency()
+            builder.RegisterAssemblyTypes(typeof(SimpleRequest).GetTypeInfo().Assembly)
+                .AsImplementedInterfaces();
+
+            ApplicationContainer = builder.Build();
+
+            return new AutofacServiceProvider(ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +99,11 @@ namespace SC.DevChallenge.Api
             }
 
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
         }
     }
 }
