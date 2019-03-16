@@ -22,11 +22,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SC.DevChallenge.Core\SC.DevChallenge.Core.csproj" />
     <ProjectReference Include="..\SC.DevChallenge.Db\SC.DevChallenge.Db.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Input\data.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SC.DevChallenge.Api.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

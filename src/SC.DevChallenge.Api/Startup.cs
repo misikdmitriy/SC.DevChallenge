@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Reflection;
 using Autofac;
@@ -11,6 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SC.DevChallenge.Api.MediatorRequests;
+using SC.DevChallenge.Api.Middlewares;
+using SC.DevChallenge.Core.Services;
+using SC.DevChallenge.Core.Services.Contracts;
 using SC.DevChallenge.Db.Contexts;
 using SC.DevChallenge.Db.Repositories;
 using SC.DevChallenge.Db.Repositories.Contracts;
@@ -51,6 +56,12 @@ namespace SC.DevChallenge.Api
             builder.RegisterGeneric(typeof(DbRepository<>))
                 .As(typeof(IDbRepository<>));
 
+            builder.RegisterType<DateTimeConverter>()
+                .As<IDateTimeConverter>();
+
+            builder.RegisterType<PriceModelParser>()
+                .As<IPriceModelParser>();
+
             builder.Populate(services);
 
             builder.RegisterType<Mediator>()
@@ -66,7 +77,7 @@ namespace SC.DevChallenge.Api
             foreach (var mediatrOpenType in mediatrOpenTypes)
             {
                 builder
-                    .RegisterAssemblyTypes(typeof(SimpleRequest).GetTypeInfo().Assembly)
+                    .RegisterAssemblyTypes(typeof(AveragePriceRequest).GetTypeInfo().Assembly)
                     .AsClosedTypesOf(mediatrOpenType)
                     .AsImplementedInterfaces();
             }
@@ -82,7 +93,7 @@ namespace SC.DevChallenge.Api
             // - requests & handlers as transient, i.e. InstancePerDependency()
             // - pre/post-processors as scoped/per-request, i.e. InstancePerLifetimeScope()
             // - behaviors as transient, i.e. InstancePerDependency()
-            builder.RegisterAssemblyTypes(typeof(SimpleRequest).GetTypeInfo().Assembly)
+            builder.RegisterAssemblyTypes(typeof(AveragePriceRequest).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
 
             ApplicationContainer = builder.Build();
@@ -98,12 +109,59 @@ namespace SC.DevChallenge.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseExceptionHandlerMiddleware();
+
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            using (var context = app.ApplicationServices.GetService<AppDbContext>())
+            {
+                var conn = context.Database.GetDbConnection();
+
+                if (conn.State != ConnectionState.Open)
+                {
+                    conn.Open();
+                }
+
+                using (var transaction = conn.BeginTransaction())
+                {
+                    ParseCsv(app.ApplicationServices.GetService<IPriceModelParser>(), conn, 
+                        transaction);
+
+                    transaction.Commit();
+                }
+            }
+        }
+
+        private static void ParseCsv(IPriceModelParser parser, DbConnection conn, DbTransaction transaction)
+        {
+            var command = File.ReadAllText(Path.Combine("Scripts", "script.sql"));
+
+            using (var file = new StreamReader(Path.Combine("Input", "data.csv")))
+            {
+                while (!file.EndOfStream)
+                {
+                    var line = file.ReadLine();
+                    var separated = line.Split(';');
+
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.Transaction = transaction;
+                        cmd.CommandText = command
+                            .Replace("'portfolio'", $"'{separated[0]}'")
+                            .Replace("'owner'", $"'{separated[1]}'")
+                            .Replace("'instrument'", $"'{separated[2]}'")
+                            .Replace("'date'", $"'{separated[3]}'")
+                            .Replace("'price'", separated[4]);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
         }
     }
 }
