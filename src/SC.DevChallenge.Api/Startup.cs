@@ -59,9 +59,6 @@ namespace SC.DevChallenge.Api
             builder.RegisterType<DateTimeConverter>()
                 .As<IDateTimeConverter>();
 
-            builder.RegisterType<PriceModelParser>()
-                .As<IPriceModelParser>();
-
             builder.Populate(services);
 
             builder.RegisterType<Mediator>()
@@ -129,15 +126,14 @@ namespace SC.DevChallenge.Api
 
                 using (var transaction = conn.BeginTransaction())
                 {
-                    ParseCsv(app.ApplicationServices.GetService<IPriceModelParser>(), conn, 
-                        transaction);
+                    ParseCsv(conn, transaction);
 
                     transaction.Commit();
                 }
             }
         }
 
-        private static void ParseCsv(IPriceModelParser parser, DbConnection conn, DbTransaction transaction)
+        private static void ParseCsv(DbConnection conn, DbTransaction transaction)
         {
             var command = File.ReadAllText(Path.Combine("Scripts", "script.sql"));
 
