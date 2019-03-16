@@ -8,7 +8,7 @@ namespace SC.DevChallenge.Api.Models
     {
         public decimal Price { get; }
 
-        [JsonConverter(typeof(DateFormatConverter), "MM/dd/yyyy HH:mm:ss")]
+        [JsonConverter(typeof(DateTimeFormatConverter), DateTimeFormatConverter.DefaultFormat)]
         public DateTime DateTime { get; }
 
         public AveragePriceModel(DateTime dateTime, decimal price)

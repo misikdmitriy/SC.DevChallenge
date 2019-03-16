@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SC.DevChallenge.Api.Converters;
 using SC.DevChallenge.Api.Exceptions;
 using SC.DevChallenge.Api.Models;
 using SC.DevChallenge.Core.Services.Contracts;
@@ -34,7 +36,7 @@ namespace SC.DevChallenge.Api.MediatorRequests
         private readonly IDbRepository<PriceModel> _repository;
         private readonly IDateTimeConverter _converter;
 
-        public AveragePriceResultHandler(IDbRepository<PriceModel> repository, 
+        public AveragePriceResultHandler(IDbRepository<PriceModel> repository,
             IDateTimeConverter converter)
         {
             _repository = repository;
@@ -44,10 +46,16 @@ namespace SC.DevChallenge.Api.MediatorRequests
         public async Task<AveragePriceModel> Handle(AveragePriceRequest request, CancellationToken cancellationToken)
         {
             DateTime date;
-            if (!DateTime.TryParse(request.Date, out date))
+            if (!DateTime.TryParseExact(request.Date, DateTimeFormatConverter.DefaultFormat, 
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
             {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, 
-                    "Provided date is in incorrect format");
+                throw new HttpResponseException(HttpStatusCode.BadRequest,
+                    new
+                    {
+                        message = "Provided date is in incorrect format",
+                        format = DateTimeFormatConverter.DefaultFormat,
+                        value = request.Date
+                    });
             }
 
             var timeSlot = _converter.DateTimeToTimeSlot(date);
@@ -61,8 +69,11 @@ namespace SC.DevChallenge.Api.MediatorRequests
 
             if (isInstrumentOwnerEmpty && isInstrumentEmpty && isPortfolioEmpty)
             {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, 
-                    "Provide at least one filter");
+                throw new HttpResponseException(HttpStatusCode.BadRequest,
+                    new
+                    {
+                        message = "Provide at least one filter"
+                    });
             }
 
             var priceModels = await _repository.FindAsync(x => (isInstrumentOwnerEmpty || x.InstrumentOwner.Name == request.InstrumentOwner) &&
@@ -71,8 +82,13 @@ namespace SC.DevChallenge.Api.MediatorRequests
                                                                x.Date >= start && x.Date < end);
             if (!priceModels.Any())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound, 
-                    "No price models");
+                throw new HttpResponseException(HttpStatusCode.NotFound,
+                    new
+                    {
+                        message = "No price models",
+                        date = start.ToString(DateTimeFormatConverter.DefaultFormat, 
+                            CultureInfo.InvariantCulture)
+                    });
             }
 
             return new AveragePriceModel(start, priceModels.Select(x => x.Price).Average());
