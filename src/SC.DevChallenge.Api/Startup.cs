@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Autofac;
@@ -17,6 +19,8 @@ using SC.DevChallenge.Api.Middlewares;
 using SC.DevChallenge.Core.Services;
 using SC.DevChallenge.Core.Services.Contracts;
 using SC.DevChallenge.Db.Contexts;
+using SC.DevChallenge.Db.Factories;
+using SC.DevChallenge.Db.Factories.Contracts;
 using SC.DevChallenge.Db.Repositories;
 using SC.DevChallenge.Db.Repositories.Contracts;
 using Swashbuckle.AspNetCore.Swagger;
@@ -58,6 +62,12 @@ namespace SC.DevChallenge.Api
 
             builder.RegisterType<DateTimeConverter>()
                 .As<IDateTimeConverter>();
+
+            builder.RegisterType<AppDbContextFactory>()
+                .As<IDbContextFactory<AppDbContext>>();
+
+            builder.RegisterType<ContentFactory>()
+                .As<IContentFactory>();
 
             builder.Populate(services);
 
@@ -115,49 +125,16 @@ namespace SC.DevChallenge.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            using (var context = app.ApplicationServices.GetService<AppDbContext>())
+            var requestOpt = new RequestLocalizationOptions
             {
-                var conn = context.Database.GetDbConnection();
+                SupportedCultures = new List<CultureInfo> {CultureInfo.InvariantCulture},
+                SupportedUICultures = new List<CultureInfo> {CultureInfo.InvariantCulture}
+            };
 
-                if (conn.State != ConnectionState.Open)
-                {
-                    conn.Open();
-                }
+            app.UseRequestLocalization(requestOpt);
 
-                using (var transaction = conn.BeginTransaction())
-                {
-                    ParseCsv(conn, transaction);
-
-                    transaction.Commit();
-                }
-            }
-        }
-
-        private static void ParseCsv(DbConnection conn, DbTransaction transaction)
-        {
-            var command = File.ReadAllText(Path.Combine("Scripts", "script.sql"));
-
-            using (var file = new StreamReader(Path.Combine("Input", "data.csv")))
-            {
-                while (!file.EndOfStream)
-                {
-                    var line = file.ReadLine();
-                    var separated = line.Split(';');
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.Transaction = transaction;
-                        cmd.CommandText = command
-                            .Replace("'portfolio'", $"'{separated[0]}'")
-                            .Replace("'owner'", $"'{separated[1]}'")
-                            .Replace("'instrument'", $"'{separated[2]}'")
-                            .Replace("'date'", $"'{separated[3]}'")
-                            .Replace("'price'", separated[4]);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
+            var contentFactory = app.ApplicationServices.GetService<IContentFactory>();
+            contentFactory.ParseContentFromCsv(Path.Combine("Input", "data.csv"));
         }
     }
 }

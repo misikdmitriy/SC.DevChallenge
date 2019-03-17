@@ -1,0 +1,300 @@
+2019-03-17 10:59:16.398 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 10:59:17.510 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 10:59:17.662 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 10:59:17.982 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 10:59:19.332 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/values  
+2019-03-17 10:59:19.700 +02:00 [INF] Request finished in 372.8592ms 404 
+2019-03-17 11:00:51.299 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2018%2003:00:00  
+2019-03-17 11:00:51.399 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:00:51.464 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2018 03:00:00"]) - Validation state: "Valid"
+2019-03-17 11:00:51.494 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:00:51.693 +02:00 [INF] Executed DbCommand (82ms) [Parameters=[@__request_InstrumentOwner_0='?' (Size = 450), @__request_Instrument_1='?' (Size = 450), @__request_Portfolio_2='?' (Size = 450), @__start_3='?' (DbType = DateTime2), @__end_4='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [x].[Id], [x].[Date], [x].[InstrumentId], [x].[InstrumentOwnerId], [x].[PortfolioId], [x].[Price]
+FROM [PriceModels] AS [x]
+INNER JOIN [Portfolios] AS [x.Portfolio] ON [x].[PortfolioId] = [x.Portfolio].[Id]
+INNER JOIN [Instruments] AS [x.Instrument] ON [x].[InstrumentId] = [x.Instrument].[Id]
+INNER JOIN [InstrumentOwners] AS [x.InstrumentOwner] ON [x].[InstrumentOwnerId] = [x.InstrumentOwner].[Id]
+WHERE (((([x.InstrumentOwner].[Name] = @__request_InstrumentOwner_0) AND ([x.Instrument].[Name] = @__request_Instrument_1)) AND ([x.Portfolio].[Name] = @__request_Portfolio_2)) AND ([x].[Date] >= @__start_3)) AND ([x].[Date] < @__end_4)
+2019-03-17 11:00:51.796 +02:00 [INF] Executed action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api), returned result Microsoft.AspNetCore.Mvc.OkObjectResult in 322.9823ms.
+2019-03-17 11:00:51.821 +02:00 [INF] Executing ObjectResult, writing value of type 'SC.DevChallenge.Api.Models.AveragePriceModel'.
+2019-03-17 11:00:51.860 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 456.51660000000004ms
+2019-03-17 11:00:51.869 +02:00 [INF] Request finished in 570.4508ms 200 application/json; charset=utf-8
+2019-03-17 11:01:35.415 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2018%2000:00:00  
+2019-03-17 11:01:35.495 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:01:35.504 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2018 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:01:35.514 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:01:35.538 +02:00 [INF] Executed DbCommand (13ms) [Parameters=[@__request_InstrumentOwner_0='?' (Size = 450), @__request_Instrument_1='?' (Size = 450), @__request_Portfolio_2='?' (Size = 450), @__start_3='?' (DbType = DateTime2), @__end_4='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [x].[Id], [x].[Date], [x].[InstrumentId], [x].[InstrumentOwnerId], [x].[PortfolioId], [x].[Price]
+FROM [PriceModels] AS [x]
+INNER JOIN [Portfolios] AS [x.Portfolio] ON [x].[PortfolioId] = [x.Portfolio].[Id]
+INNER JOIN [Instruments] AS [x.Instrument] ON [x].[InstrumentId] = [x.Instrument].[Id]
+INNER JOIN [InstrumentOwners] AS [x.InstrumentOwner] ON [x].[InstrumentOwnerId] = [x.InstrumentOwner].[Id]
+WHERE (((([x.InstrumentOwner].[Name] = @__request_InstrumentOwner_0) AND ([x.Instrument].[Name] = @__request_Instrument_1)) AND ([x.Portfolio].[Name] = @__request_Portfolio_2)) AND ([x].[Date] >= @__start_3)) AND ([x].[Date] < @__end_4)
+2019-03-17 11:01:35.550 +02:00 [INF] Executed action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api), returned result Microsoft.AspNetCore.Mvc.OkObjectResult in 37.1089ms.
+2019-03-17 11:01:35.557 +02:00 [INF] Executing ObjectResult, writing value of type 'SC.DevChallenge.Api.Models.AveragePriceModel'.
+2019-03-17 11:01:35.559 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 56.609500000000004ms
+2019-03-17 11:01:35.561 +02:00 [INF] Request finished in 146.7258ms 200 application/json; charset=utf-8
+2019-03-17 11:01:40.821 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2017%2000:00:00  
+2019-03-17 11:01:40.826 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:01:40.832 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2017 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:01:41.030 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 199.27640000000002ms
+2019-03-17 11:01:41.058 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.ArgumentOutOfRangeException: Provided date should be after 01.01.2018 0:00:00
+Parameter name: dateTime
+Actual value was 01.01.2017 0:00:00.
+   at SC.DevChallenge.Core.Services.DateTimeConverter.DateTimeToTimeSlot(DateTime dateTime) in C:\Users\mad_b\Documents\Visual Studio 2017\Projects\SC.DevChallenge\src\SC.DevChallenge.Core\Services\DateTimeConverter.cs:line 19
+   at SC.DevChallenge.Api.MediatorRequests.AveragePriceResultHandler.Handle(AveragePriceRequest request, CancellationToken cancellationToken) in C:\Users\mad_b\Documents\Visual Studio 2017\Projects\SC.DevChallenge\src\SC.DevChallenge.Api\MediatorRequests\AveragePriceRequest.cs:line 61
+   at SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice(String portfolio, String owner, String instrument, String date) in C:\Users\mad_b\Documents\Visual Studio 2017\Projects\SC.DevChallenge\src\SC.DevChallenge.Api\Controllers\PricesController.cs:line 31
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextResourceFilter()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Rethrow(ResourceExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeFilterPipelineAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeAsync()
+   at Microsoft.AspNetCore.Builder.RouterMiddleware.Invoke(HttpContext httpContext)
+   at SC.DevChallenge.Api.Middlewares.ExceptionHandlerMiddleware.Invoke(HttpContext httpContext) in C:\Users\mad_b\Documents\Visual Studio 2017\Projects\SC.DevChallenge\src\SC.DevChallenge.Api\Middlewares\ExceptionHandlerMiddleware.cs:line 21
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-03-17 11:01:41.254 +02:00 [INF] Request finished in 432.4478ms 500 text/html; charset=utf-8
+2019-03-17 11:01:47.650 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2018%2000:00:00  
+2019-03-17 11:01:47.655 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:01:47.657 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2018 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:01:47.685 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:01:47.721 +02:00 [INF] Executed DbCommand (17ms) [Parameters=[@__request_InstrumentOwner_0='?' (Size = 450), @__request_Instrument_1='?' (Size = 450), @__request_Portfolio_2='?' (Size = 450), @__start_3='?' (DbType = DateTime2), @__end_4='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [x].[Id], [x].[Date], [x].[InstrumentId], [x].[InstrumentOwnerId], [x].[PortfolioId], [x].[Price]
+FROM [PriceModels] AS [x]
+INNER JOIN [Portfolios] AS [x.Portfolio] ON [x].[PortfolioId] = [x.Portfolio].[Id]
+INNER JOIN [Instruments] AS [x.Instrument] ON [x].[InstrumentId] = [x.Instrument].[Id]
+INNER JOIN [InstrumentOwners] AS [x.InstrumentOwner] ON [x].[InstrumentOwnerId] = [x.InstrumentOwner].[Id]
+WHERE (((([x.InstrumentOwner].[Name] = @__request_InstrumentOwner_0) AND ([x.Instrument].[Name] = @__request_Instrument_1)) AND ([x.Portfolio].[Name] = @__request_Portfolio_2)) AND ([x].[Date] >= @__start_3)) AND ([x].[Date] < @__end_4)
+2019-03-17 11:01:47.730 +02:00 [INF] Executed action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api), returned result Microsoft.AspNetCore.Mvc.OkObjectResult in 47.591300000000004ms.
+2019-03-17 11:01:47.735 +02:00 [INF] Executing ObjectResult, writing value of type 'SC.DevChallenge.Api.Models.AveragePriceModel'.
+2019-03-17 11:01:47.739 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 82.0119ms
+2019-03-17 11:01:47.744 +02:00 [INF] Request finished in 94.2965ms 200 application/json; charset=utf-8
+2019-03-17 11:03:44.617 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:03:45.608 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:03:45.654 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:03:45.997 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:03:47.307 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/values  
+2019-03-17 11:03:47.600 +02:00 [INF] Request finished in 294.595ms 404 
+2019-03-17 11:03:51.910 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2017%2000:00:00  
+2019-03-17 11:03:51.993 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:03:52.031 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2017 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:03:52.237 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 237.44330000000002ms
+2019-03-17 11:03:52.275 +02:00 [INF] Request finished in 364.3209ms 400 text/plain
+2019-03-17 11:05:53.955 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:05:54.726 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:05:54.774 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:05:54.989 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:05:55.010 +02:00 [INF] Skip DB update
+2019-03-17 11:05:56.091 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/values  
+2019-03-17 11:05:56.493 +02:00 [INF] Request finished in 406.5763ms 404 
+2019-03-17 11:06:24.715 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:06:25.493 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:06:25.552 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:06:25.788 +02:00 [INF] Executed DbCommand (7ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:06:25.810 +02:00 [INF] Cleanup all DB tables
+2019-03-17 11:06:25.825 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Hash], [c].[LastUpdate]
+FROM [ContentHistories] AS [c]
+2019-03-17 11:06:25.877 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [i].[Id], [i].[Name]
+FROM [InstrumentOwners] AS [i]
+2019-03-17 11:06:25.893 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [i].[Id], [i].[Name]
+FROM [Instruments] AS [i]
+2019-03-17 11:06:25.907 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Name]
+FROM [Portfolios] AS [p]
+2019-03-17 11:06:25.923 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Date], [p].[InstrumentId], [p].[InstrumentOwnerId], [p].[PortfolioId], [p].[Price]
+FROM [PriceModels] AS [p]
+2019-03-17 11:06:26.088 +02:00 [INF] Executed DbCommand (40ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = Int32), @p7='?' (DbType = Int32), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int32), @p12='?' (DbType = Int32), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = Int32), @p16='?' (DbType = Int32), @p17='?' (DbType = Int32), @p18='?' (DbType = Int32), @p19='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+DELETE FROM [ContentHistories]
+WHERE [Id] = @p0;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p1;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p2;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p3;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p4;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p5;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p6;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p7;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p8;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p9;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p10;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p11;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p12;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p13;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p14;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p15;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p16;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p17;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p18;
+SELECT @@ROWCOUNT;
+
+DELETE FROM [PriceModels]
+WHERE [Id] = @p19;
+SELECT @@ROWCOUNT;
+2019-03-17 11:06:26.131 +02:00 [INF] Executed DbCommand (21ms) [Parameters=[@p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+DELETE FROM [InstrumentOwners]
+WHERE [Id] = @p0;
+SELECT @@ROWCOUNT;
+2019-03-17 11:06:26.136 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+DELETE FROM [Instruments]
+WHERE [Id] = @p0;
+SELECT @@ROWCOUNT;
+2019-03-17 11:06:26.149 +02:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+DELETE FROM [Portfolios]
+WHERE [Id] = @p0;
+SELECT @@ROWCOUNT;
+2019-03-17 11:06:26.160 +02:00 [INF] Start CSV parsing
+2019-03-17 11:06:26.168 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:06:26.408 +02:00 [INF] CSV parsing successfully finished
+2019-03-17 11:06:26.410 +02:00 [INF] Update content history
+2019-03-17 11:06:26.412 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:06:26.448 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (Size = 8000) (DbType = Binary), @p1='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [ContentHistories] ([Hash], [LastUpdate])
+VALUES (@p0, @p1);
+SELECT [Id]
+FROM [ContentHistories]
+WHERE @@ROWCOUNT = 1 AND [Id] = scope_identity();
+2019-03-17 11:06:27.966 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/values  
+2019-03-17 11:06:28.401 +02:00 [INF] Request finished in 438.0647ms 404 
+2019-03-17 11:07:00.914 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2017%2000:00:00  
+2019-03-17 11:07:01.004 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:07:01.050 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2017 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:07:01.292 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 283.1385ms
+2019-03-17 11:07:01.335 +02:00 [INF] Request finished in 422.1236ms 400 text/plain
+2019-03-17 11:14:50.604 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:14:51.515 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:14:51.582 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:14:51.813 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:14:51.831 +02:00 [INF] Skip DB update
+2019-03-17 11:14:52.981 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/values  
+2019-03-17 11:14:53.318 +02:00 [WRN] AcceptLanguageHeaderRequestCultureProvider returned the following unsupported cultures '["ru","en","en-GB"]'.
+2019-03-17 11:14:53.321 +02:00 [WRN] AcceptLanguageHeaderRequestCultureProvider returned the following unsupported UI Cultures '["ru","en","en-GB"]'.
+2019-03-17 11:14:53.344 +02:00 [INF] Request finished in 365.9981ms 404 
+2019-03-17 11:14:55.915 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2017%2000:00:00  
+2019-03-17 11:14:56.015 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:14:56.049 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2017 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:14:56.240 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 218.4042ms
+2019-03-17 11:14:56.275 +02:00 [INF] Request finished in 359.6763ms 400 text/plain
+2019-03-17 11:15:01.041 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2018%2000:00:00  
+2019-03-17 11:15:01.054 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:15:01.098 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2018 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:15:01.117 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:15:01.275 +02:00 [INF] Executed DbCommand (45ms) [Parameters=[@__8__locals1_request_InstrumentOwner_0='?' (Size = 450), @__8__locals1_request_Instrument_1='?' (Size = 450), @__8__locals1_request_Portfolio_2='?' (Size = 450), @__start_3='?' (DbType = DateTime2), @__end_4='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [x].[Id], [x].[Date], [x].[InstrumentId], [x].[InstrumentOwnerId], [x].[PortfolioId], [x].[Price]
+FROM [PriceModels] AS [x]
+INNER JOIN [Portfolios] AS [x.Portfolio] ON [x].[PortfolioId] = [x.Portfolio].[Id]
+INNER JOIN [Instruments] AS [x.Instrument] ON [x].[InstrumentId] = [x.Instrument].[Id]
+INNER JOIN [InstrumentOwners] AS [x.InstrumentOwner] ON [x].[InstrumentOwnerId] = [x.InstrumentOwner].[Id]
+WHERE (((([x.InstrumentOwner].[Name] = @__8__locals1_request_InstrumentOwner_0) AND ([x.Instrument].[Name] = @__8__locals1_request_Instrument_1)) AND ([x.Portfolio].[Name] = @__8__locals1_request_Portfolio_2)) AND ([x].[Date] >= @__start_3)) AND ([x].[Date] < @__end_4)
+2019-03-17 11:15:01.378 +02:00 [INF] Executed action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api), returned result Microsoft.AspNetCore.Mvc.OkObjectResult in 266.1104ms.
+2019-03-17 11:15:01.399 +02:00 [INF] Executing ObjectResult, writing value of type 'SC.DevChallenge.Api.Models.AveragePriceModel'.
+2019-03-17 11:15:01.425 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 329.596ms
+2019-03-17 11:15:01.432 +02:00 [INF] Request finished in 390.5431ms 200 application/json; charset=utf-8
+2019-03-17 11:15:47.531 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/api/prices/average?portfolio=Fannie%20Mae&owner=Microsoft&instrument=Deposit&date=01/01/2017%2000:00:00  
+2019-03-17 11:15:47.553 +02:00 [INF] Route matched with {action = "GetAveragePrice", controller = "Prices"}. Executing action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api)
+2019-03-17 11:15:47.569 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2017 00:00:00"]) - Validation state: "Valid"
+2019-03-17 11:15:47.710 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 140.9383ms
+2019-03-17 11:15:47.736 +02:00 [INF] Request finished in 204.9839ms 400 text/plain

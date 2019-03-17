@@ -10,6 +10,7 @@ namespace SC.DevChallenge.Db.Contexts
         public DbSet<InstrumentOwner> InstrumentOwners { get; set; }
         public DbSet<Portfolio> Portfolios { get; set; }
         public DbSet<PriceModel> PriceModels { get; set; }
+        public DbSet<ContentHistory> ContentHistories { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
         {
@@ -21,6 +22,7 @@ namespace SC.DevChallenge.Db.Contexts
             modelBuilder.ApplyConfiguration(new InstrumentOwnerEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PriceModelEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ContentHistoryEntityTypeConfiguration());
         }
     }
 }

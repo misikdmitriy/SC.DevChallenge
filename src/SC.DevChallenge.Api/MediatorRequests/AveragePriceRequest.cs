@@ -58,40 +58,50 @@ namespace SC.DevChallenge.Api.MediatorRequests
                     });
             }
 
-            var timeSlot = _converter.DateTimeToTimeSlot(date);
-
-            var start = _converter.GetTimeSlotStartDate(timeSlot);
-            var end = _converter.GetTimeSlotStartDate(timeSlot + 1);
-
-            var isInstrumentOwnerEmpty = string.IsNullOrEmpty(request.InstrumentOwner);
-            var isInstrumentEmpty = string.IsNullOrEmpty(request.Instrument);
-            var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
-
-            if (isInstrumentOwnerEmpty && isInstrumentEmpty && isPortfolioEmpty)
+            try
             {
-                throw new HttpResponseException(HttpStatusCode.BadRequest,
-                    new
-                    {
-                        message = "Provide at least one filter"
-                    });
-            }
+                var timeSlot = _converter.DateTimeToTimeSlot(date);
 
-            var priceModels = await _repository.FindAsync(x => (isInstrumentOwnerEmpty || x.InstrumentOwner.Name == request.InstrumentOwner) &&
-                                                               (isInstrumentEmpty || x.Instrument.Name == request.Instrument) &&
-                                                               (isPortfolioEmpty || x.Portfolio.Name == request.Portfolio) &&
-                                                               x.Date >= start && x.Date < end);
-            if (!priceModels.Any())
+                var start = _converter.GetTimeSlotStartDate(timeSlot);
+                var end = _converter.GetTimeSlotStartDate(timeSlot + 1);
+
+                var isInstrumentOwnerEmpty = string.IsNullOrEmpty(request.InstrumentOwner);
+                var isInstrumentEmpty = string.IsNullOrEmpty(request.Instrument);
+                var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
+
+                if (isInstrumentOwnerEmpty && isInstrumentEmpty && isPortfolioEmpty)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest,
+                        new
+                        {
+                            message = "Provide at least one filter"
+                        });
+                }
+
+                var priceModels = await _repository.FindAsync(x => (isInstrumentOwnerEmpty || x.InstrumentOwner.Name == request.InstrumentOwner) &&
+                                                                   (isInstrumentEmpty || x.Instrument.Name == request.Instrument) &&
+                                                                   (isPortfolioEmpty || x.Portfolio.Name == request.Portfolio) &&
+                                                                   x.Date >= start && x.Date < end);
+                if (!priceModels.Any())
+                {
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
+                        new
+                        {
+                            message = "No price models",
+                            date = start
+                        });
+                }
+
+                return new AveragePriceModel(start, priceModels.Select(x => x.Price).Average());
+            }
+            catch (ArgumentOutOfRangeException aex)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound,
-                    new
-                    {
-                        message = "No price models",
-                        date = start.ToString(DateTimeFormatConverter.DefaultFormat, 
-                            CultureInfo.InvariantCulture)
-                    });
+                throw new HttpResponseException(HttpStatusCode.BadRequest, new
+                {
+                    message = aex.Message,
+                    actual = aex.ActualValue
+                });
             }
-
-            return new AveragePriceModel(start, priceModels.Select(x => x.Price).Average());
         }
     }
 }

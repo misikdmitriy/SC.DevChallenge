@@ -10,7 +10,7 @@ using SC.DevChallenge.Db.Contexts;
 namespace SC.DevChallenge.Db.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190316165651_Initial")]
+    [Migration("20190317083251_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,22 @@ namespace SC.DevChallenge.Db.Migrations
                 .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("SC.DevChallenge.Db.Models.ContentHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Hash")
+                        .IsRequired();
+
+                    b.Property<DateTime>("LastUpdate");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentHistories");
+                });
 
             modelBuilder.Entity("SC.DevChallenge.Db.Models.Instrument", b =>
                 {
