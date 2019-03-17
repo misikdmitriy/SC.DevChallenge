@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace SC.DevChallenge.Api
@@ -31,6 +26,7 @@ namespace SC.DevChallenge.Api
                             optional: true, reloadOnChange: true);
                     config.AddEnvironmentVariables();
                 })
+                .UseUrls(new ConfigurationBuilder().AddCommandLine(args).Build()["urls"])
                 .UseSerilog((context, configuration) => configuration
                     .ReadFrom.Configuration(context.Configuration))
                 .UseStartup<Startup>();

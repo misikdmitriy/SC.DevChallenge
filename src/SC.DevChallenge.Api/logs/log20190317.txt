@@ -298,3 +298,86 @@ WHERE (((([x.InstrumentOwner].[Name] = @__8__locals1_request_InstrumentOwner_0) 
 2019-03-17 11:15:47.569 +02:00 [INF] Executing action method SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) with arguments (["Fannie Mae","Microsoft","Deposit","01/01/2017 00:00:00"]) - Validation state: "Valid"
 2019-03-17 11:15:47.710 +02:00 [INF] Executed action SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice (SC.DevChallenge.Api) in 140.9383ms
 2019-03-17 11:15:47.736 +02:00 [INF] Request finished in 204.9839ms 400 text/plain
+2019-03-17 11:20:20.500 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:20:21.236 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:20:21.282 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:20:21.652 +02:00 [INF] Executed DbCommand (5ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:20:21.672 +02:00 [INF] Skip DB update
+2019-03-17 11:20:23.333 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/swagger  
+2019-03-17 11:20:23.675 +02:00 [INF] Request finished in 341.594ms 301 
+2019-03-17 11:20:23.693 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html  
+2019-03-17 11:20:23.721 +02:00 [INF] Request finished in 27.6026ms 200 text/html
+2019-03-17 11:20:23.799 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/swagger/swagger-ui.css  
+2019-03-17 11:20:23.799 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/swagger/swagger-ui-standalone-preset.js  
+2019-03-17 11:20:23.799 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/swagger/swagger-ui-bundle.js  
+2019-03-17 11:20:23.905 +02:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2019-03-17 11:20:23.905 +02:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2019-03-17 11:20:23.917 +02:00 [INF] Request finished in 118.075ms 200 application/javascript
+2019-03-17 11:20:23.917 +02:00 [INF] Request finished in 118.3348ms 200 text/css
+2019-03-17 11:20:24.161 +02:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2019-03-17 11:20:24.164 +02:00 [INF] Request finished in 364.5769ms 200 application/javascript
+2019-03-17 11:20:24.789 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json  
+2019-03-17 11:20:25.033 +02:00 [INF] Request finished in 243.4684ms 200 application/json;charset=utf-8
+2019-03-17 11:21:51.282 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:21:51.729 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:21:51.768 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:21:51.928 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:21:51.943 +02:00 [INF] Skip DB update
+2019-03-17 11:21:52.007 +02:00 [FTL] Unable to start Kestrel.
+System.Net.Sockets.SocketException (10013): An attempt was made to access a socket in a way forbidden by its access permissions
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransport.BindAsync()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.<>c__DisplayClass22_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.AnyIPListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(IServerAddressesFeature addresses, KestrelServerOptions serverOptions, ILogger logger, Func`2 createBinding)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+2019-03-17 11:22:01.487 +02:00 [INF] User profile is available. Using 'C:\Users\mad_b\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-03-17 11:22:01.937 +02:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'PriceModel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+2019-03-17 11:22:01.982 +02:00 [INF] Entity Framework Core 2.1.8-servicing-32085 initialized 'AppDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+2019-03-17 11:22:02.148 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[@__md5_0='?' (Size = 8000) (DbType = Binary)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ContentHistories] AS [x]
+        WHERE [x].[Hash] = @__md5_0)
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END
+2019-03-17 11:22:02.173 +02:00 [INF] Skip DB update
+2019-03-17 11:22:13.704 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger  
+2019-03-17 11:22:13.831 +02:00 [INF] Request finished in 126.9365ms 301 
+2019-03-17 11:22:13.842 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger/index.html  
+2019-03-17 11:22:13.869 +02:00 [INF] Request finished in 22.6559ms 200 text/html
+2019-03-17 11:22:13.929 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger/swagger-ui.css  
+2019-03-17 11:22:13.930 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger/swagger-ui-bundle.js  
+2019-03-17 11:22:13.930 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger/swagger-ui-standalone-preset.js  
+2019-03-17 11:22:14.019 +02:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2019-03-17 11:22:14.019 +02:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2019-03-17 11:22:14.031 +02:00 [INF] Request finished in 100.9582ms 200 application/javascript
+2019-03-17 11:22:14.031 +02:00 [INF] Request finished in 101.8647ms 200 text/css
+2019-03-17 11:22:14.045 +02:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2019-03-17 11:22:14.062 +02:00 [INF] Request finished in 132.3834ms 200 application/javascript
+2019-03-17 11:22:14.786 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger/v1/swagger.json  
+2019-03-17 11:22:14.872 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:8080/swagger/favicon-32x32.png  
+2019-03-17 11:22:14.875 +02:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2019-03-17 11:22:14.878 +02:00 [INF] Request finished in 5.5319ms 200 image/png
+2019-03-17 11:22:15.058 +02:00 [INF] Request finished in 272.4801ms 200 application/json;charset=utf-8
