@@ -15,7 +15,11 @@ services:
         environment:
             SA_PASSWORD: "Your_password123"
             ACCEPT_EULA: "Y"
-    test:
+    unit:
         build: 
             context: ./
-            dockerfile: ./test/Dockerfile
+            dockerfile: ./unit/Dockerfile
+    integration:
+        build: 
+            context: ./
+            dockerfile: ./integration/Dockerfile

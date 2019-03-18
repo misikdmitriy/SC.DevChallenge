@@ -55,57 +55,64 @@ namespace SC.DevChallenge.Api
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            var builder = new ContainerBuilder();
-
-            builder.RegisterGeneric(typeof(DbRepository<>))
-                .As(typeof(IDbRepository<>));
-
-            builder.RegisterType<DateTimeConverter>()
-                .As<IDateTimeConverter>();
-
-            builder.RegisterType<AppDbContextFactory>()
-                .As<IDbContextFactory<AppDbContext>>();
-
-            builder.RegisterType<ContentFactory>()
-                .As<IContentFactory>();
+            var builder = RegisterDependencies();
 
             builder.Populate(services);
-
-            builder.RegisterType<Mediator>()
-                .As<IMediator>()
-                .InstancePerLifetimeScope();
-
-            var mediatrOpenTypes = new[]
-            {
-                typeof(IRequestHandler<,>),
-                typeof(INotificationHandler<>),
-            };
-
-            foreach (var mediatrOpenType in mediatrOpenTypes)
-            {
-                builder
-                    .RegisterAssemblyTypes(typeof(AveragePriceRequest).GetTypeInfo().Assembly)
-                    .AsClosedTypesOf(mediatrOpenType)
-                    .AsImplementedInterfaces();
-            }
-
-            // request handlers
-            builder.Register<ServiceFactory>(context =>
-            {
-                var c = context.Resolve<IComponentContext>();
-                return t => c.Resolve(t);
-            });
-
-            // finally register our custom code (individually, or via assembly scanning)
-            // - requests & handlers as transient, i.e. InstancePerDependency()
-            // - pre/post-processors as scoped/per-request, i.e. InstancePerLifetimeScope()
-            // - behaviors as transient, i.e. InstancePerDependency()
-            builder.RegisterAssemblyTypes(typeof(AveragePriceRequest).GetTypeInfo().Assembly)
-                .AsImplementedInterfaces();
 
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
+        }
+
+        public static ContainerBuilder RegisterDependencies()
+        {
+	        var builder = new ContainerBuilder();
+
+	        builder.RegisterGeneric(typeof(DbRepository<>))
+		        .As(typeof(IDbRepository<>));
+
+	        builder.RegisterType<DateTimeConverter>()
+		        .As<IDateTimeConverter>();
+
+	        builder.RegisterType<AppDbContextFactory>()
+		        .As<IDbContextFactory<AppDbContext>>();
+
+	        builder.RegisterType<ContentFactory>()
+		        .As<IContentFactory>();
+
+	        builder.RegisterType<Mediator>()
+		        .As<IMediator>()
+		        .InstancePerLifetimeScope();
+
+	        var mediatrOpenTypes = new[]
+	        {
+		        typeof(IRequestHandler<,>),
+		        typeof(INotificationHandler<>),
+	        };
+
+	        foreach (var mediatrOpenType in mediatrOpenTypes)
+	        {
+		        builder
+			        .RegisterAssemblyTypes(typeof(AveragePriceRequest).GetTypeInfo().Assembly)
+			        .AsClosedTypesOf(mediatrOpenType)
+			        .AsImplementedInterfaces();
+	        }
+
+	        // request handlers
+	        builder.Register<ServiceFactory>(context =>
+	        {
+		        var c = context.Resolve<IComponentContext>();
+		        return t => c.Resolve(t);
+	        });
+
+	        // finally register our custom code (individually, or via assembly scanning)
+	        // - requests & handlers as transient, i.e. InstancePerDependency()
+	        // - pre/post-processors as scoped/per-request, i.e. InstancePerLifetimeScope()
+	        // - behaviors as transient, i.e. InstancePerDependency()
+	        builder.RegisterAssemblyTypes(typeof(AveragePriceRequest).GetTypeInfo().Assembly)
+		        .AsImplementedInterfaces();
+
+			return builder;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
