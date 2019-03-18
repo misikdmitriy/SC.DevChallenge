@@ -19,22 +19,6 @@ namespace SC.DevChallenge.Db.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SC.DevChallenge.Db.Models.ContentHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte[]>("Hash")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastUpdate");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContentHistories");
-                });
-
             modelBuilder.Entity("SC.DevChallenge.Db.Models.Instrument", b =>
                 {
                     b.Property<int>("Id")

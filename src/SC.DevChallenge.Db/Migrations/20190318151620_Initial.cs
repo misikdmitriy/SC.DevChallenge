@@ -9,20 +9,6 @@ namespace SC.DevChallenge.Db.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ContentHistories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Hash = table.Column<byte[]>(nullable: false),
-                    LastUpdate = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ContentHistories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "InstrumentOwners",
                 columns: table => new
                 {
@@ -135,9 +121,6 @@ namespace SC.DevChallenge.Db.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ContentHistories");
-
             migrationBuilder.DropTable(
                 name: "PriceModels");
 
