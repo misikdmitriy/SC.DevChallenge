@@ -45,9 +45,8 @@ namespace SC.DevChallenge.Api.MediatorRequests
 
         public async Task<AveragePriceModel> Handle(AveragePriceRequest request, CancellationToken cancellationToken)
         {
-            DateTime date;
-            if (!DateTime.TryParseExact(request.Date, DateTimeFormatConverter.DefaultFormat, 
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+	        if (!DateTime.TryParseExact(request.Date, DateTimeFormatConverter.DefaultFormat, 
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
             {
                 throw new HttpResponseException(HttpStatusCode.BadRequest,
                     new

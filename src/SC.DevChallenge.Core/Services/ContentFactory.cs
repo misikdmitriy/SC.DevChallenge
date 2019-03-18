@@ -14,125 +14,133 @@ using SC.DevChallenge.Db.Models;
 
 namespace SC.DevChallenge.Core.Services
 {
-    public class ContentFactory : IContentFactory
-    {
-        private readonly IDbContextFactory<AppDbContext> _factory;
-        private readonly ILogger<ContentFactory> _logger;
+	public class ContentFactory : IContentFactory
+	{
+		private readonly IDbContextFactory<AppDbContext> _factory;
+		private readonly ILogger<ContentFactory> _logger;
 
-        public ContentFactory(IDbContextFactory<AppDbContext> factory, 
-            ILogger<ContentFactory> logger)
-        {
-            _factory = factory;
-            _logger = logger;
-        }
+		public ContentFactory(IDbContextFactory<AppDbContext> factory,
+			ILogger<ContentFactory> logger)
+		{
+			_factory = factory;
+			_logger = logger;
+		}
 
-        public void ParseContentFromCsv(string filepath)
-        {
-            // 1. Compare hash of last file parsed with DB hash
-            // In case if hashes equal - do nothing
-            // else - cleanup DB
-            var md5 = GetFileMd5(filepath);
+		public void ParseContentFromCsv(string filepath)
+		{
+			// 1. Compare hash of last file parsed with DB hash
+			// In case if hashes equal - do nothing
+			// else - cleanup DB
+			var md5 = GetFileMd5(filepath);
 
-            using (var context = _factory.CreateContext())
-            {
-                if (context.ContentHistories.Any(x => x.Hash == md5))
-                {
-                    _logger.LogInformation("Skip DB update");
-                    return;
-                }
+			using (var context = _factory.CreateContext())
+			{
+				if (context.ContentHistories.Any(x => x.Hash == md5))
+				{
+					_logger.LogInformation("Skip DB update");
+					return;
+				}
 
-                _logger.LogInformation("Cleanup all DB tables");
-                CleanupDb(context);
-            }
+				_logger.LogInformation("Cleanup all DB tables");
+				CleanupDb(context);
+			}
 
-            // 2. Parse CSV
-            _logger.LogInformation("Start CSV parsing");
-            using (var context = _factory.CreateContext())
-            {
-                var conn = context.Database.GetDbConnection();
+			// 2. Parse CSV
+			_logger.LogInformation("Start CSV parsing");
+			using (var context = _factory.CreateContext())
+			{
+				var conn = context.Database.GetDbConnection();
 
-                if (conn.State != ConnectionState.Open)
-                {
-                    conn.Open();
-                }
+				if (conn.State != ConnectionState.Open)
+				{
+					conn.Open();
+				}
 
-                using (var transaction = conn.BeginTransaction())
-                {
-                    ParseCsv(filepath, conn, transaction);
+				using (var transaction = conn.BeginTransaction())
+				{
+					ParseCsv(filepath, conn, transaction);
 
-                    transaction.Commit();
-                }
-            }
-            _logger.LogInformation("CSV parsing successfully finished");
+					transaction.Commit();
+				}
+			}
+			_logger.LogInformation("CSV parsing successfully finished");
 
-            // 3. Save file hash
-            _logger.LogInformation("Update content history");
-            using (var context = _factory.CreateContext())
-            {
-                var history = new ContentHistory
-                {
-                    Hash = md5,
-                    LastUpdate = DateTime.Now
-                };
+			// 3. Save file hash
+			_logger.LogInformation("Update content history");
+			using (var context = _factory.CreateContext())
+			{
+				var history = new ContentHistory
+				{
+					Hash = md5,
+					LastUpdate = DateTime.Now
+				};
 
-                context.ContentHistories.Add(history);
+				context.ContentHistories.Add(history);
 
-                context.SaveChanges();
-            }
-        }
+				context.SaveChanges();
+			}
+		}
 
-        private void CleanupDb(AppDbContext context)
-        {
-            context.ContentHistories.RemoveRange(context.ContentHistories);
-            context.InstrumentOwners.RemoveRange(context.InstrumentOwners);
-            context.Instruments.RemoveRange(context.Instruments);
-            context.Portfolios.RemoveRange(context.Portfolios);
-            context.PriceModels.RemoveRange(context.PriceModels);
+		private void CleanupDb(AppDbContext context)
+		{
+			context.ContentHistories.RemoveRange(context.ContentHistories);
+			context.InstrumentOwners.RemoveRange(context.InstrumentOwners);
+			context.Instruments.RemoveRange(context.Instruments);
+			context.Portfolios.RemoveRange(context.Portfolios);
+			context.PriceModels.RemoveRange(context.PriceModels);
 
-            context.SaveChanges();
-        }
+			context.SaveChanges();
+		}
 
-        private void ParseCsv(string inputPath, DbConnection conn, DbTransaction transaction)
-        {
-            var command = string.Empty;
+		private void ParseCsv(string inputPath, DbConnection conn, DbTransaction transaction)
+		{
+			var command = string.Empty;
 
-            using (var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("SC.DevChallenge.Core.Scripts.script.sql"))
-            using (var reader = new StreamReader(stream))
-            {
-                command = reader.ReadToEnd();
-            }
+			using (var stream = Assembly.GetExecutingAssembly()
+				.GetManifestResourceStream("SC.DevChallenge.Core.Scripts.script.sql"))
+			using (var reader = new StreamReader(stream))
+			{
+				command = reader.ReadToEnd();
+			}
 
-            using (var file = new StreamReader(inputPath))
-            {
-                while (!file.EndOfStream)
-                {
-                    var line = file.ReadLine();
-                    var separated = line.Split(';');
+			using (var file = new StreamReader(inputPath))
+			{
+				if (file.EndOfStream)
+				{
+					return;
+				}
 
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.Transaction = transaction;
-                        cmd.CommandText = command
-                            .Replace("'portfolio'", $"'{separated[0]}'")
-                            .Replace("'owner'", $"'{separated[1]}'")
-                            .Replace("'instrument'", $"'{separated[2]}'")
-                            .Replace("'date'", $"'{separated[3]}'")
-                            .Replace("'price'", separated[4]);
+				// ignore first line
+				file.ReadLine();
 
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+					var separated = line.Split(',');
 
-        private byte[] GetFileMd5(string filepath)
-        {
-            using (var file = File.OpenRead(filepath))
-            using (var md5 = MD5.Create())
-            {
-                return md5.ComputeHash(file);
-            }
-        }
-    }
+					using (var cmd = conn.CreateCommand())
+					{
+						cmd.Transaction = transaction;
+						cmd.CommandText = command
+							.Replace("'portfolio'", $"'{separated[0]}'")
+							.Replace("'owner'", $"'{separated[1]}'")
+							.Replace("'instrument'", $"'{separated[2]}'")
+							.Replace("'date'", $"'{separated[3]}'")
+							.Replace("'price'", separated[4]);
+
+						cmd.ExecuteNonQuery();
+					}
+				}
+			}
+		}
+
+		private byte[] GetFileMd5(string filepath)
+		{
+			using (var file = File.OpenRead(filepath))
+			using (var md5 = MD5.Create())
+			{
+				return md5.ComputeHash(file);
+			}
+		}
+	}
 }

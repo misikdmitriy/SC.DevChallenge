@@ -90,5 +90,29 @@ namespace SC.DevChallenge.IntegrationTests
 				response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 			}
 		}
+
+		[Fact]
+		public async Task ApiShouldReturnBadRequestIfNoFilterProvided()
+		{
+			// Arrange
+			// Act
+			using (var response = await _client.GetAsync("api/prices/average?date=01%2F01%2F2018%2000%3A00%3A00"))
+			{
+				// Assert
+				response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+			}
+		}
+
+		[Fact]
+		public async Task ApiShouldReturnBadRequestIfDateNotProvided()
+		{
+			// Arrange
+			// Act
+			using (var response = await _client.GetAsync("api/prices/average?portfolio=portfolio2&owner=owner1&instrument=instrument1"))
+			{
+				// Assert
+				response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+			}
+		}
 	}
 }

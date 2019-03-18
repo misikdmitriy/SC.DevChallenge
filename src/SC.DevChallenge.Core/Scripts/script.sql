@@ -25,4 +25,4 @@ IF @portfolioId IS NULL
 	END
 
 INSERT INTO [dbo].[PriceModels]([PortfolioId], [InstrumentOwnerId], [InstrumentId], [Date], [Price])
-	VALUES (@portfolioId, @ownerId, @instrumentId, 'date', 'price')
+	VALUES (@portfolioId, @ownerId, @instrumentId, CONVERT(datetime, 'date', 103), 'price')

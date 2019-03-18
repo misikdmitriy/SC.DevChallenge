@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using SC.DevChallenge.Api.Converters;
 using SC.DevChallenge.Api.MediatorRequests;
+using SC.DevChallenge.Api.Models;
 
 namespace SC.DevChallenge.Api.Controllers
 {
@@ -19,9 +17,20 @@ namespace SC.DevChallenge.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
+		/// <summary>
+		/// Return average price model
+		/// </summary>
+		/// <param name="portfolio">Optional. Portfolio name</param>
+		/// <param name="owner">Optional. Owner name</param>
+		/// <param name="instrument">Optional. Instrument name</param>
+		/// <param name="date">Required. Time slot</param>
+		/// <remarks>At least one filter parameter should be provided (portfolio, owner or instrument)</remarks>
+		/// <response code="200">Average price for this period</response>
+		/// <response code="400">Invalid date/no filters provided</response>
+		/// <response code="404">No data for this period</response>
+		[HttpGet]
         [Route("average")]
-        [ProducesResponseType(typeof(AveragePriceRequest), 200)]
+        [ProducesResponseType(typeof(AveragePriceModel), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetAveragePrice(string portfolio, string owner, 
