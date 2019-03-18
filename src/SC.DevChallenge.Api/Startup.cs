@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SC.DevChallenge.Api.MediatorRequests;
 using SC.DevChallenge.Api.Middlewares;
 using SC.DevChallenge.Core.Services;
@@ -139,7 +140,17 @@ namespace SC.DevChallenge.Api
             app.UseRequestLocalization(requestOpt);
 
             var contentFactory = app.ApplicationServices.GetService<IContentFactory>();
-            contentFactory.ParseContentFromCsv(Path.Combine("Input", "data.csv"));
-        }
+            var logger = app.ApplicationServices.GetService<ILogger<Startup>>();
+
+            if (contentFactory.IsUpdateRequired())
+            {
+	            logger.LogInformation("DB update started");
+				contentFactory.ParseContentFromCsv(Path.Combine("Input", "data.csv"));
+			}
+            else
+            {
+	            logger.LogInformation("Skip DB update");
+			}
+		}
     }
 }

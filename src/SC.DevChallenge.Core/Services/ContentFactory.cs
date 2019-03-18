@@ -23,20 +23,18 @@ namespace SC.DevChallenge.Core.Services
 			_logger = logger;
 		}
 
-		public void ParseContentFromCsv(string filepath)
+		public bool IsUpdateRequired()
 		{
-			// 1. If any data exists in DB - skip CSV parsing
 			using (var context = _factory.CreateContext())
 			{
-				if (context.PriceModels.Any())
-				{
-					_logger.LogInformation("Skip DB update");
-					return;
-				}
+				return !context.PriceModels.Any();
 			}
+		}
 
-			// 2. Parse CSV
+		public void ParseContentFromCsv(string filepath)
+		{
 			_logger.LogInformation("Start CSV parsing");
+
 			using (var context = _factory.CreateContext())
 			using (var conn = context.Database.GetDbConnection())
 			{
@@ -52,6 +50,7 @@ namespace SC.DevChallenge.Core.Services
 					transaction.Commit();
 				}
 			}
+
 			_logger.LogInformation("CSV parsing successfully finished");
 		}
 
