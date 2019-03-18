@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,7 @@ namespace SC.DevChallenge.Api
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
+					Console.WriteLine($"Hosting environment is {env.EnvironmentName}");
                     config.AddJsonFile("appsettings.json", optional: true,
                             reloadOnChange: true)
                         .AddJsonFile($"appsettings.{env.EnvironmentName}.json",

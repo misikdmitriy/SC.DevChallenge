@@ -6,14 +6,15 @@ namespace SC.DevChallenge.Api.Models
 {
     public class AveragePriceModel
     {
+		[JsonConverter(typeof(DecimalFormatConverter), 2)]
         public decimal Price { get; }
 
         [JsonConverter(typeof(DateTimeFormatConverter), DateTimeFormatConverter.DefaultFormat)]
-        public DateTime DateTime { get; }
+        public DateTime Date { get; }
 
-        public AveragePriceModel(DateTime dateTime, decimal price)
+        public AveragePriceModel(DateTime date, decimal price)
         {
-            DateTime = dateTime;
+            Date = date;
             Price = price;
         }
     }
