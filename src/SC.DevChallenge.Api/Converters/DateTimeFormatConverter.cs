@@ -5,7 +5,7 @@ namespace SC.DevChallenge.Api.Converters
 {
     public class DateTimeFormatConverter : IsoDateTimeConverter
     {
-        public const string DefaultFormat = "MM/dd/yyyy HH:mm:ss";
+        public const string DefaultFormat = "dd/MM/yyyy HH:mm:ss";
 
         public DateTimeFormatConverter(string format)
         {

@@ -2,7 +2,7 @@
 
 ls
 set -e
-run_cmd="dotnet run --urls http://*:80 --no-launch-profile"
+run_cmd="dotnet run --urls http://*:8080 --no-launch-profile"
 
 cd src/SC.DevChallenge.Api
 until dotnet ef database update; do

@@ -23,7 +23,7 @@ namespace SC.DevChallenge.Api.Controllers
 		/// <param name="portfolio">Optional. Portfolio name</param>
 		/// <param name="owner">Optional. Owner name</param>
 		/// <param name="instrument">Optional. Instrument name</param>
-		/// <param name="date">Required. Time slot</param>
+		/// <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
 		/// <remarks>At least one filter parameter should be provided (portfolio, owner or instrument)</remarks>
 		/// <response code="200">Average price for this period</response>
 		/// <response code="400">Invalid date/no filters provided</response>
