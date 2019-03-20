@@ -1,0 +1,35 @@
+1) Для запуска сервиса необходимо:
+    - Docker with Linux containers support
+    - запустить docker-compose up web
+	- сервис использует путь http://localhost:8080
+	- swagger документация доступна по пути http://localhost:8080/swagger
+1.1) Альтернативный путь для запуска сервиса:
+	- Установить .NET Core SDK 2.1
+	- в папке src/SC.DevChallenge.Api выполнить dotnet run --urls http://*:8080 --no-launch-profile
+	
+2) Для запуска юнит тестов необходимо:
+    - Docker with Linux containers support
+    - запустить docker-compose up unit
+2.1) Альтернативный путь для запуска тестов:
+	- установить .NET Core SDK 2.1
+	- в папке src/SC.DevChallenge.UnitTests выполнить dotnet test
+	
+3) Для запуска интеграционных тестов необходимо:
+    - Docker with Linux containers support
+    - запустить docker-compose up integration
+3.1) Альтернативный путь для запуска тестов:
+	- установить .NET Core SDK 2.1
+	- в папке src/SC.DevChallenge.IntegrationTests выполнить dotnet test
+	
+4) АПИ содержит один вызов - api/prices/average с query parameters (более подробное описание в swagger):
+	- owner
+	- instrument
+	- portfolio
+	- date
+	Дата обязательный параметр. 3 остальных параметра не обязательны, но необходимо указать хотя бы один параметр фильтрации.
+	Парсинг CSV (src/SC.DevChallenge.Api/Input/data.csv) происходит при запуске сервера. 
+	Для ускорения сохранения данных в БД используется "сырой" SQL скрипт (src/SC.DevChallenge.Core/Scripts/script.sql).
+	Данные записываются в рамках одной транзакции. Если прервать старт сервера либо при возникновение ошибки парсинга данные не будут добавленны в БД. 
+	Парсинг CSV происходит только в том случае, если в табличке [dbo].[PriceModels] нет данных.
+	50К строк парсится достаточно долго (локально у меня за 5 минут) :) До этого сервис не доступен.
+	
