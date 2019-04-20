@@ -14,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SC.DevChallenge.Api.MediatorRequests;
-using SC.DevChallenge.Api.Middlewares;
 using SC.DevChallenge.Core.Services;
 using SC.DevChallenge.Core.Services.Contracts;
 using SC.DevChallenge.Db.Contexts;
@@ -124,8 +123,6 @@ namespace SC.DevChallenge.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseExceptionHandlerMiddleware();
 
             app.UseMvc();
             app.UseSwagger();

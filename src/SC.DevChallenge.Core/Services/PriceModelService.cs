@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SC.DevChallenge.Core.Exceptions;
 using SC.DevChallenge.Core.Extensions;
 using SC.DevChallenge.Core.Models;
 using SC.DevChallenge.Core.Services.Contracts;
@@ -26,10 +27,12 @@ namespace SC.DevChallenge.Core.Services
         public async Task<PriceModelResult> GetAverage(int timeSlot, 
             string instrumentOwner, string instrument, string portfolio)
         {
-            var (start, end) = GetTimeSlotScope(timeSlot);
+            var (start, end) = GetTimeSlotFrame(timeSlot);
 
-            var average = await GetAverage(start, end, instrumentOwner,
-                instrument, portfolio);
+            var priceModels = await GetPriceModels(start, end,
+                instrumentOwner, instrument, portfolio);
+
+            var average = priceModels.Select(x => x.Price).Average();
 
             return new PriceModelResult(start, average);
         }
@@ -37,43 +40,17 @@ namespace SC.DevChallenge.Core.Services
         public async Task<PriceModelResult> GetBenchmark(int timeSlot, 
             string instrumentOwner, string instrument, string portfolio)
         {
-            var (start, end) = GetTimeSlotScope(timeSlot);
+            var (start, end) = GetTimeSlotFrame(timeSlot);
 
-            var average = await GetBenchmark(start, end, instrumentOwner,
-                instrument, portfolio);
-
-            return new PriceModelResult(start, average);
-        }
-
-        public async Task<decimal?> GetAverage(DateTime start, DateTime end,
-            string instrumentOwner, string instrument, string portfolio)
-        {
             var priceModels = await GetPriceModels(start, end,
                 instrumentOwner, instrument, portfolio);
 
-            if (!priceModels.Any())
-            {
-                return null;
-            }
+            var benchmark = priceModels.Select(x => x.Price).CountBenchmark();
 
-            return priceModels.Select(x => x.Price).Average();
+            return new PriceModelResult(start, benchmark);
         }
 
-        public async Task<decimal?> GetBenchmark(DateTime start, DateTime end,
-            string instrumentOwner, string instrument, string portfolio)
-        {
-            var priceModels = await GetPriceModels(start, end,
-                instrumentOwner, instrument, portfolio);
-
-            if (!priceModels.Any())
-            {
-                return null;
-            }
-
-            return priceModels.Select(x => x.Price).CountBenchmark();
-        }
-
-        private (DateTime, DateTime) GetTimeSlotScope(int timeSlot)
+        private (DateTime, DateTime) GetTimeSlotFrame(int timeSlot)
         {
             return (_converter.GetTimeSlotStartDate(timeSlot),
                 _converter.GetTimeSlotStartDate(timeSlot + 1));
@@ -95,6 +72,11 @@ namespace SC.DevChallenge.Core.Services
                     (isInstrumentEmpty || x.Instrument.Name == instrument) &&
                     (isPortfolioEmpty || x.Portfolio.Name == portfolio) &&
                     x.Date >= start && x.Date < end);
+
+                if (!priceModels.Any())
+                {
+                    throw new PriceModelAbsentException(start);
+                }
 
                 return priceModels;
             }

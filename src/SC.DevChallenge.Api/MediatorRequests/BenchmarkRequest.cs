@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SC.DevChallenge.Api.Exceptions;
 using SC.DevChallenge.Api.Extensions;
 using SC.DevChallenge.Api.Models;
 using SC.DevChallenge.Core.Services.Contracts;
@@ -27,7 +25,7 @@ namespace SC.DevChallenge.Api.MediatorRequests
         private readonly IDateTimeConverter _converter;
         private readonly IPriceModelService _priceModelService;
 
-        public BenchmarkResultHandler(IDateTimeConverter converter, 
+        public BenchmarkResultHandler(IDateTimeConverter converter,
             IPriceModelService priceModelService)
         {
             _converter = converter;
@@ -36,53 +34,21 @@ namespace SC.DevChallenge.Api.MediatorRequests
 
         public async Task<ApiPriceModel> Handle(BenchmarkRequest request, CancellationToken cancellationToken)
         {
-            try
+            var date = request.Date.Parse();
+
+            var timeSlot = _converter.DateTimeToTimeSlot(date);
+
+            var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
+
+            if (isPortfolioEmpty)
             {
-                var date = request.Date.Parse();
-
-                var timeSlot = _converter.DateTimeToTimeSlot(date);
-
-                var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
-
-                if (isPortfolioEmpty)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest,
-                        new
-                        {
-                            message = "Provide portfolio name"
-                        });
-                }
-
-                var benchmark = await _priceModelService.GetBenchmark(timeSlot,
-                    portfolio: request.Portfolio);
-
-                if (!benchmark.Price.HasValue)
-                {
-                    throw new HttpResponseException(HttpStatusCode.NotFound,
-                        new
-                        {
-                            message = "No price models",
-                            date = benchmark.Start
-                        });
-                }
-
-                return new ApiPriceModel(benchmark.Start, benchmark.Price.Value);
+                throw new ArgumentNullException(nameof(request.Portfolio));
             }
-            catch (FormatException fex)
-            {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, new
-                {
-                    message = fex.Message
-                });
-            }
-            catch (ArgumentOutOfRangeException aex)
-            {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, new
-                {
-                    message = aex.Message,
-                    actual = aex.ActualValue
-                });
-            }
+
+            var benchmark = await _priceModelService.GetBenchmark(timeSlot,
+                portfolio: request.Portfolio);
+
+            return new ApiPriceModel(benchmark.Start, benchmark.Price);
         }
     }
 }

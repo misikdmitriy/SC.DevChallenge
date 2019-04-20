@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using SC.DevChallenge.Api.Filters;
 using SC.DevChallenge.Api.MediatorRequests;
 using SC.DevChallenge.Api.Models;
 
@@ -11,6 +12,7 @@ namespace SC.DevChallenge.Api.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [ExceptionHandlingFilter]
     public class PricesController : ControllerBase
     {
         private readonly IMediator _mediator;

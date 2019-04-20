@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using SC.DevChallenge.Core.Exceptions;
 using SC.DevChallenge.Core.Services;
 using SC.DevChallenge.Core.Services.Contracts;
 using SC.DevChallenge.Db.Contexts;
@@ -77,6 +78,30 @@ namespace SC.DevChallenge.UnitTests
         }
 
         [Fact]
+        public async Task GetAverageShouldThrowExceptionIfModelsAbsent()
+        {
+            // Arrange
+            const int timeSlot = 1;
+            var start = new DateTime(2018, 1, 1, 0, 0, 0, 0);
+            _converterMock.Setup(x => x.GetTimeSlotStartDate(timeSlot))
+                .Returns(start);
+
+            _converterMock.Setup(x => x.GetTimeSlotStartDate(timeSlot + 1))
+                .Returns(start.AddDays(2));
+
+            // Act
+            try
+            {
+                // Assert
+                await _service.GetAverage(timeSlot, Guid.NewGuid().ToString());
+            }
+            catch (PriceModelAbsentException)
+            {
+                // all ok
+            }
+        }
+
+        [Fact]
         public async Task GetBenchmarkShouldReturnAverageBetweenModels()
         {
             // Arrange
@@ -137,6 +162,30 @@ namespace SC.DevChallenge.UnitTests
             // Assert
             average.Price.ShouldBe(3.5m);
             average.Start.ShouldBe(start);
+        }
+
+        [Fact]
+        public async Task GetBenchmarkShouldThrowExceptionIfModelsAbsent()
+        {
+            // Arrange
+            const int timeSlot = 1;
+            var start = new DateTime(2018, 1, 1, 0, 0, 0, 0);
+            _converterMock.Setup(x => x.GetTimeSlotStartDate(timeSlot))
+                .Returns(start);
+
+            _converterMock.Setup(x => x.GetTimeSlotStartDate(timeSlot + 1))
+                .Returns(start.AddDays(2));
+
+            // Act
+            try
+            {
+                // Assert
+                await _service.GetBenchmark(timeSlot, Guid.NewGuid().ToString());
+            }
+            catch (PriceModelAbsentException)
+            {
+                // all ok
+            }
         }
 
         public void Dispose()

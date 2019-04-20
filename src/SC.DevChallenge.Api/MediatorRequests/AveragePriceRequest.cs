@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SC.DevChallenge.Api.Exceptions;
 using SC.DevChallenge.Api.Extensions;
 using SC.DevChallenge.Api.Models;
 using SC.DevChallenge.Core.Services.Contracts;
@@ -32,7 +30,7 @@ namespace SC.DevChallenge.Api.MediatorRequests
         private readonly IDateTimeConverter _converter;
         private readonly IPriceModelService _priceModelService;
 
-        public AveragePriceResultHandler(IDateTimeConverter converter, 
+        public AveragePriceResultHandler(IDateTimeConverter converter,
             IPriceModelService priceModelService)
         {
             _converter = converter;
@@ -41,55 +39,24 @@ namespace SC.DevChallenge.Api.MediatorRequests
 
         public async Task<ApiPriceModel> Handle(AveragePriceRequest request, CancellationToken cancellationToken)
         {
-            try
+            var date = request.Date.Parse();
+
+            var timeSlot = _converter.DateTimeToTimeSlot(date);
+
+            var isInstrumentOwnerEmpty = string.IsNullOrEmpty(request.InstrumentOwner);
+            var isInstrumentEmpty = string.IsNullOrEmpty(request.Instrument);
+            var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
+
+            if (isInstrumentOwnerEmpty && isInstrumentEmpty && isPortfolioEmpty)
             {
-                var date = request.Date.Parse();
-
-                var timeSlot = _converter.DateTimeToTimeSlot(date);
-
-                var isInstrumentOwnerEmpty = string.IsNullOrEmpty(request.InstrumentOwner);
-                var isInstrumentEmpty = string.IsNullOrEmpty(request.Instrument);
-                var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
-
-                if (isInstrumentOwnerEmpty && isInstrumentEmpty && isPortfolioEmpty)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest,
-                        new
-                        {
-                            message = "Provide at least one filter"
-                        });
-                }
-
-                var average = await _priceModelService.GetAverage(timeSlot, 
-                    request.InstrumentOwner, request.Instrument, request.Portfolio);
-
-                if (!average.Price.HasValue)
-                {
-                    throw new HttpResponseException(HttpStatusCode.NotFound,
-                        new
-                        {
-                            message = "No price models",
-                            date = average.Start
-                        });
-                }
-
-                return new ApiPriceModel(average.Start, average.Price.Value);
+                throw new ArgumentNullException(nameof(request), 
+                    "Provide at least one filter");
             }
-            catch (FormatException fex)
-            {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, new
-                {
-                    message = fex.Message
-                });
-            }
-            catch (ArgumentOutOfRangeException aex)
-            {
-                throw new HttpResponseException(HttpStatusCode.BadRequest, new
-                {
-                    message = aex.Message,
-                    actual = aex.ActualValue
-                });
-            }
+
+            var average = await _priceModelService.GetAverage(timeSlot,
+                request.InstrumentOwner, request.Instrument, request.Portfolio);
+
+            return new ApiPriceModel(average.Start, average.Price);
         }
     }
 }
