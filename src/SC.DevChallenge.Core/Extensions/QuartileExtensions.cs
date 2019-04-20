@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SC.DevChallenge.Api.Extensions
+namespace SC.DevChallenge.Core.Extensions
 {
     public static class QuartileExtensions
     {

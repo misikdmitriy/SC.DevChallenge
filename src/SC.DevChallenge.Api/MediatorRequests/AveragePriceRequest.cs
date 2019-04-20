@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,14 +7,10 @@ using SC.DevChallenge.Api.Exceptions;
 using SC.DevChallenge.Api.Extensions;
 using SC.DevChallenge.Api.Models;
 using SC.DevChallenge.Core.Services.Contracts;
-using SC.DevChallenge.Db.Contexts;
-using SC.DevChallenge.Db.Factories.Contracts;
-using SC.DevChallenge.Db.Models;
-using SC.DevChallenge.Db.Repositories;
 
 namespace SC.DevChallenge.Api.MediatorRequests
 {
-    public class AveragePriceRequest : IRequest<AveragePriceModel>
+    public class AveragePriceRequest : IRequest<ApiPriceModel>
     {
         public string Portfolio { get; }
         public string Instrument { get; }
@@ -32,28 +27,25 @@ namespace SC.DevChallenge.Api.MediatorRequests
         }
     }
 
-    public class AveragePriceResultHandler : IRequestHandler<AveragePriceRequest, AveragePriceModel>
+    public class AveragePriceResultHandler : IRequestHandler<AveragePriceRequest, ApiPriceModel>
     {
-        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly IDateTimeConverter _converter;
+        private readonly IPriceModelService _priceModelService;
 
         public AveragePriceResultHandler(IDateTimeConverter converter, 
-            IDbContextFactory<AppDbContext> dbContextFactory)
+            IPriceModelService priceModelService)
         {
             _converter = converter;
-            _dbContextFactory = dbContextFactory;
+            _priceModelService = priceModelService;
         }
 
-        public async Task<AveragePriceModel> Handle(AveragePriceRequest request, CancellationToken cancellationToken)
+        public async Task<ApiPriceModel> Handle(AveragePriceRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 var date = request.Date.Parse();
 
                 var timeSlot = _converter.DateTimeToTimeSlot(date);
-
-                var start = _converter.GetTimeSlotStartDate(timeSlot);
-                var end = _converter.GetTimeSlotStartDate(timeSlot + 1);
 
                 var isInstrumentOwnerEmpty = string.IsNullOrEmpty(request.InstrumentOwner);
                 var isInstrumentEmpty = string.IsNullOrEmpty(request.Instrument);
@@ -68,28 +60,20 @@ namespace SC.DevChallenge.Api.MediatorRequests
                         });
                 }
 
-                using (var context = _dbContextFactory.CreateContext())
+                var average = await _priceModelService.GetAverage(timeSlot, 
+                    request.InstrumentOwner, request.Instrument, request.Portfolio);
+
+                if (!average.Price.HasValue)
                 {
-                    var repository = new DbRepository<PriceModel>(context);
-
-                    var priceModels = await repository.FindAsync(x =>
-                        (isInstrumentOwnerEmpty || x.InstrumentOwner.Name == request.InstrumentOwner) &&
-                        (isInstrumentEmpty || x.Instrument.Name == request.Instrument) &&
-                        (isPortfolioEmpty || x.Portfolio.Name == request.Portfolio) &&
-                        x.Date >= start && x.Date < end);
-
-                    if (!priceModels.Any())
-                    {
-                        throw new HttpResponseException(HttpStatusCode.NotFound,
-                            new
-                            {
-                                message = "No price models",
-                                date = start
-                            });
-                    }
-
-                    return new AveragePriceModel(start, priceModels.Select(x => x.Price).Average());
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
+                        new
+                        {
+                            message = "No price models",
+                            date = average.Start
+                        });
                 }
+
+                return new ApiPriceModel(average.Start, average.Price.Value);
             }
             catch (FormatException fex)
             {

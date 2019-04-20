@@ -79,11 +79,14 @@ namespace SC.DevChallenge.Api
 	        builder.RegisterType<ContentFactory>()
 		        .As<IContentFactory>();
 
-	        builder.RegisterType<Mediator>()
+            builder.RegisterType<PriceModelService>()
+                .As<IPriceModelService>();
+
+            builder.RegisterType<Mediator>()
 		        .As<IMediator>()
 		        .InstancePerLifetimeScope();
 
-	        var mediatrOpenTypes = new[]
+            var mediatrOpenTypes = new[]
 	        {
 		        typeof(IRequestHandler<,>),
 		        typeof(INotificationHandler<>),

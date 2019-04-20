@@ -4,7 +4,7 @@ using SC.DevChallenge.Api.Converters;
 
 namespace SC.DevChallenge.Api.Models
 {
-    public class AveragePriceModel
+    public class ApiPriceModel
     {
 		[JsonConverter(typeof(DecimalFormatConverter), 2)]
         public decimal Price { get; }
@@ -12,7 +12,7 @@ namespace SC.DevChallenge.Api.Models
         [JsonConverter(typeof(DateTimeFormatConverter), DateTimeFormatConverter.DefaultFormat)]
         public DateTime Date { get; }
 
-        public AveragePriceModel(DateTime date, decimal price)
+        public ApiPriceModel(DateTime date, decimal price)
         {
             Date = date;
             Price = price;
