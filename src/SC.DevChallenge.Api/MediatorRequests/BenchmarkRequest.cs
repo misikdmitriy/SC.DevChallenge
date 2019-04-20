@@ -79,17 +79,12 @@ namespace SC.DevChallenge.Api.MediatorRequests
                             });
                     }
 
-                    var (q1, q2, q3) = priceModels.Select(x => x.Price).TakeQuartiles();
+                    var (q1, _, q3) = priceModels.Select(x => x.Price).TakeQuartiles();
 
-                    var q1Average = priceModels.Where(x => x.Price <= q1)
-                        .Average(p => p.Price);
-                    var q3Average = priceModels.Where(x => x.Price >= q2 && x.Price <= q3)
-                        .Average(p => p.Price);
+                    var iqr = q3 - q1;
 
-                    var iqr = q3Average - q1Average;
-
-                    var lowest = q1Average - 1.5m * iqr;
-                    var highest = q3Average + 1.5m * iqr;
+                    var lowest = q1 - 1.5m * iqr;
+                    var highest = q3 + 1.5m * iqr;
 
                     var average = priceModels
                         .Where(x => x.Price >= lowest && x.Price <= highest)
