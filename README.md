@@ -33,9 +33,3 @@ In case if data is incorrect (at least one row) all data won't be added to DB. <
 CSV parsing occurs only when table dbo.PriceModels is empty. <br />
 SCV parsing is long process (wait about 5 mins). <br />
 API described on Swagger page <br />
-# Possible improvements and service advantages
-- CSV parsing could be async operation so that server can start without locks until CSV parsed;
-- System already can be scaled vertically;
-- In case if all servers will use single DB instance service can be scaled horizontally as well;
-- To scale horizontally data should be provided by one of the services before services on other machines start their work;
-- Server is fully stateless.
