@@ -4,6 +4,11 @@
         <name>SC.DevChallenge.Api</name>
     </assembly>
     <members>
+        <member name="T:SC.DevChallenge.Api.Controllers.PricesController">
+            <summary>
+            Price API
+            </summary>
+        </member>
         <member name="M:SC.DevChallenge.Api.Controllers.PricesController.GetAveragePrice(System.String,System.String,System.String,System.String)">
             <summary>
             Return average price model
@@ -14,29 +19,30 @@
             <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
             <remarks>At least one filter parameter should be provided (portfolio, owner or instrument)</remarks>
             <response code="200">Average price for this period</response>
-            <response code="400">Invalid date/no filters provided</response>
+            <response code="400">Invalid date/No filters provided</response>
             <response code="404">No data for this period</response>
         </member>
         <member name="M:SC.DevChallenge.Api.Controllers.PricesController.GetBenchmark(System.String,System.String)">
             <summary>
             Return benchmark
             </summary>
-            <param name="portfolio">Optional. Portfolio name</param>
+            <param name="portfolio">Required. Portfolio name</param>
             <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
-            <remarks>Portfolio should be provided</remarks>
-            <response code="200">Average price for this period</response>
-            <response code="400">Invalid date/no filters provided</response>
+            <response code="200">Benchmark price for this period</response>
+            <response code="400">Invalid date/Portfolio not provided</response>
             <response code="404">No data for this period</response>
         </member>
         <member name="M:SC.DevChallenge.Api.Controllers.PricesController.GetAggregate(System.String,System.String,System.String,System.Int32)">
             <summary>
             Return aggregate
             </summary>
-            <param name="portfolio">Optional. Portfolio name</param>
-            <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
-            <remarks>Portfolio should be provided</remarks>
-            <response code="200">Average price for this period</response>
-            <response code="400">Invalid date/no filters provided</response>
+            <param name="portfolio">Required. Portfolio name</param>
+            <param name="startdate">Required. Start date of time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+            <param name="enddate">Required. End date of time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+            <param name="resultpoints">Required. Results point</param>
+            <response code="200">Aggregated price models for this period</response>
+            <response code="400">Invalid date/Portfolio not provided/End date is earlier than start date
+            Result points is not positive/Short time period between start and end date</response>
             <response code="404">No data for this period</response>
         </member>
     </members>

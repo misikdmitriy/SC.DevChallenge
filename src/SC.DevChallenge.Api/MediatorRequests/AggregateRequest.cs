@@ -8,7 +8,6 @@ using MediatR;
 using SC.DevChallenge.Api.Exceptions;
 using SC.DevChallenge.Api.Extensions;
 using SC.DevChallenge.Api.Models;
-using SC.DevChallenge.Core.Extensions;
 using SC.DevChallenge.Core.Services.Contracts;
 
 namespace SC.DevChallenge.Api.MediatorRequests
@@ -127,19 +126,26 @@ namespace SC.DevChallenge.Api.MediatorRequests
                     var benchmarks = new List<decimal>();
                     for (var j = leftTimeSlot; j < rightTimeSlot; j++)
                     {
-                        var start = _converter.GetTimeSlotStartDate(j);
-                        var end = _converter.GetTimeSlotStartDate(j + 1);
-
-                        var benchmark = await _priceModelService.GetBenchmark(start, end,
+                        var benchmark = await _priceModelService.GetBenchmark(j,
                             portfolio: request.Portfolio);
 
-                        if (benchmark.HasValue)
+                        if (benchmark.Price.HasValue)
                         {
-                            benchmarks.Add(benchmark.Value);
+                            benchmarks.Add(benchmark.Price.Value);
                         }
                     }
 
                     var date = _converter.GetTimeSlotStartDate(rightTimeSlot - 1);
+
+                    if (!benchmarks.Any())
+                    {
+                        throw new HttpResponseException(HttpStatusCode.NotFound,
+                            new
+                            {
+                                message = "No price models",
+                                date
+                            });
+                    }
 
                     var priceModel = new ApiPriceModel(date,
                         benchmarks.Average());

@@ -6,6 +6,9 @@ using SC.DevChallenge.Api.Models;
 
 namespace SC.DevChallenge.Api.Controllers
 {
+    /// <summary>
+    /// Price API
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PricesController : ControllerBase
@@ -17,18 +20,18 @@ namespace SC.DevChallenge.Api.Controllers
             _mediator = mediator;
         }
 
-		/// <summary>
-		/// Return average price model
-		/// </summary>
-		/// <param name="portfolio">Optional. Portfolio name</param>
-		/// <param name="owner">Optional. Owner name</param>
-		/// <param name="instrument">Optional. Instrument name</param>
-		/// <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
-		/// <remarks>At least one filter parameter should be provided (portfolio, owner or instrument)</remarks>
-		/// <response code="200">Average price for this period</response>
-		/// <response code="400">Invalid date/no filters provided</response>
-		/// <response code="404">No data for this period</response>
-		[HttpGet]
+        /// <summary>
+        /// Return average price model
+        /// </summary>
+        /// <param name="portfolio">Optional. Portfolio name</param>
+        /// <param name="owner">Optional. Owner name</param>
+        /// <param name="instrument">Optional. Instrument name</param>
+        /// <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+        /// <remarks>At least one filter parameter should be provided (portfolio, owner or instrument)</remarks>
+        /// <response code="200">Average price for this period</response>
+        /// <response code="400">Invalid date/No filters provided</response>
+        /// <response code="404">No data for this period</response>
+        [HttpGet]
         [Route("average")]
         [ProducesResponseType(typeof(ApiPriceModel), 200)]
         [ProducesResponseType(400)]
@@ -46,11 +49,10 @@ namespace SC.DevChallenge.Api.Controllers
         /// <summary>
         /// Return benchmark
         /// </summary>
-        /// <param name="portfolio">Optional. Portfolio name</param>
+        /// <param name="portfolio">Required. Portfolio name</param>
         /// <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
-        /// <remarks>Portfolio should be provided</remarks>
-        /// <response code="200">Average price for this period</response>
-        /// <response code="400">Invalid date/no filters provided</response>
+        /// <response code="200">Benchmark price for this period</response>
+        /// <response code="400">Invalid date/Portfolio not provided</response>
         /// <response code="404">No data for this period</response>
         [HttpGet]
         [Route("benchmark")]
@@ -67,15 +69,17 @@ namespace SC.DevChallenge.Api.Controllers
         /// <summary>
         /// Return aggregate
         /// </summary>
-        /// <param name="portfolio">Optional. Portfolio name</param>
-        /// <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
-        /// <remarks>Portfolio should be provided</remarks>
-        /// <response code="200">Average price for this period</response>
-        /// <response code="400">Invalid date/no filters provided</response>
+        /// <param name="portfolio">Required. Portfolio name</param>
+        /// <param name="startdate">Required. Start date of time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+        /// <param name="enddate">Required. End date of time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+        /// <param name="resultpoints">Required. Results point</param>
+        /// <response code="200">Aggregated price models for this period</response>
+        /// <response code="400">Invalid date/Portfolio not provided/End date is earlier than start date
+        /// Result points is not positive/Short time period between start and end date</response>
         /// <response code="404">No data for this period</response>
         [HttpGet]
         [Route("aggregate")]
-        [ProducesResponseType(typeof(ApiPriceModel), 200)]
+        [ProducesResponseType(typeof(ApiPriceModel[]), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetAggregate(string portfolio, string startdate,

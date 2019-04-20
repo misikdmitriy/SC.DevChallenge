@@ -8,16 +8,6 @@ namespace SC.DevChallenge.Api.Exceptions
     {
         public HttpStatusCode Code { get; }
 
-        public HttpResponseException(HttpStatusCode code)
-        {
-            Code = code;
-        }
-
-        public HttpResponseException(HttpStatusCode code, string message) : base(message)
-        {
-            Code = code;
-        }
-
         public HttpResponseException(HttpStatusCode code, object reason) : base(JsonConvert.SerializeObject(reason))
         {
             Code = code;

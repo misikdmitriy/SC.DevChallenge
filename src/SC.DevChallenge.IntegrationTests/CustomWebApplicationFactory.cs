@@ -126,6 +126,14 @@ namespace SC.DevChallenge.IntegrationTests
                     Price = 150.00m
                 },
                 new PriceModel
+                {
+                    InstrumentId = instruments[2].Id,
+                    InstrumentOwnerId = owners[2].Id,
+                    PortfolioId = portfolios[0].Id,
+                    Date = new DateTime(2018, 1, 1, 3, 30, 0),
+                    Price = 250.00m
+                },
+                new PriceModel
 				{
 					InstrumentId = instruments[0].Id,
 					InstrumentOwnerId = owners[0].Id,
