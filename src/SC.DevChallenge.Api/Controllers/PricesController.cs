@@ -42,5 +42,26 @@ namespace SC.DevChallenge.Api.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Return benchmark
+        /// </summary>
+        /// <param name="portfolio">Optional. Portfolio name</param>
+        /// <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+        /// <remarks>Portfolio should be provided</remarks>
+        /// <response code="200">Average price for this period</response>
+        /// <response code="400">Invalid date/no filters provided</response>
+        /// <response code="404">No data for this period</response>
+        [HttpGet]
+        [Route("benchmark")]
+        [ProducesResponseType(typeof(AveragePriceModel), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetBenchmark(string portfolio, string date)
+        {
+            var result = await _mediator.Send(new BenchmarkRequest(portfolio, date));
+
+            return Ok(result);
+        }
     }
 }

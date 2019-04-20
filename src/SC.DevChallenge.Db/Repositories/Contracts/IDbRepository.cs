@@ -9,8 +9,10 @@ namespace SC.DevChallenge.Db.Repositories.Contracts
 		where TEntity : class, IIDentifiable
 	{
 		Task<TEntity[]> FindAsync(Expression<Func<TEntity, bool>> predicate);
-		Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
-		Task AddAsync(TEntity entity);
-		Task UpdateAsync(TEntity entity);
-	}
+
+        Task<int> Count(Expression<Func<TEntity, bool>> predicate);
+        //Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
+        //Task AddAsync(TEntity entity);
+        //Task UpdateAsync(TEntity entity);
+    }
 }

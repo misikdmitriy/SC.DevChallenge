@@ -17,5 +17,16 @@
             <response code="400">Invalid date/no filters provided</response>
             <response code="404">No data for this period</response>
         </member>
+        <member name="M:SC.DevChallenge.Api.Controllers.PricesController.GetBenchmark(System.String,System.String)">
+            <summary>
+            Return benchmark
+            </summary>
+            <param name="portfolio">Optional. Portfolio name</param>
+            <param name="date">Required. Time slot. Format - dd/MM/yyyy HH:mm:ss</param>
+            <remarks>Portfolio should be provided</remarks>
+            <response code="200">Average price for this period</response>
+            <response code="400">Invalid date/no filters provided</response>
+            <response code="404">No data for this period</response>
+        </member>
     </members>
 </doc>

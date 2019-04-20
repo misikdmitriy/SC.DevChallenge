@@ -15,36 +15,31 @@ using SC.DevChallenge.Db.Repositories;
 
 namespace SC.DevChallenge.Api.MediatorRequests
 {
-    public class AveragePriceRequest : IRequest<AveragePriceModel>
+    public class BenchmarkRequest : IRequest<BenchmarkModel>
     {
         public string Portfolio { get; }
-        public string Instrument { get; }
-        public string InstrumentOwner { get; }
         public string Date { get; }
 
-        public AveragePriceRequest(string instrument, string instrumentOwner, string portfolio,
-            string date)
+        public BenchmarkRequest(string portfolio, string date)
         {
-            Instrument = instrument;
-            InstrumentOwner = instrumentOwner;
             Portfolio = portfolio;
             Date = date;
         }
     }
 
-    public class AveragePriceResultHandler : IRequestHandler<AveragePriceRequest, AveragePriceModel>
+    public class BenchmarkResultHandler : IRequestHandler<BenchmarkRequest, BenchmarkModel>
     {
-        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
+        private IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly IDateTimeConverter _converter;
 
-        public AveragePriceResultHandler(IDateTimeConverter converter, 
-            IDbContextFactory<AppDbContext> dbContextFactory)
+        public BenchmarkResultHandler(IDbContextFactory<AppDbContext> dbContextFactory, 
+            IDateTimeConverter converter)
         {
-            _converter = converter;
             _dbContextFactory = dbContextFactory;
+            _converter = converter;
         }
 
-        public async Task<AveragePriceModel> Handle(AveragePriceRequest request, CancellationToken cancellationToken)
+        public async Task<BenchmarkModel> Handle(BenchmarkRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -55,16 +50,14 @@ namespace SC.DevChallenge.Api.MediatorRequests
                 var start = _converter.GetTimeSlotStartDate(timeSlot);
                 var end = _converter.GetTimeSlotStartDate(timeSlot + 1);
 
-                var isInstrumentOwnerEmpty = string.IsNullOrEmpty(request.InstrumentOwner);
-                var isInstrumentEmpty = string.IsNullOrEmpty(request.Instrument);
                 var isPortfolioEmpty = string.IsNullOrEmpty(request.Portfolio);
 
-                if (isInstrumentOwnerEmpty && isInstrumentEmpty && isPortfolioEmpty)
+                if (isPortfolioEmpty)
                 {
                     throw new HttpResponseException(HttpStatusCode.BadRequest,
                         new
                         {
-                            message = "Provide at least one filter"
+                            message = "Provide portfolio name"
                         });
                 }
 
@@ -72,11 +65,9 @@ namespace SC.DevChallenge.Api.MediatorRequests
                 {
                     var repository = new DbRepository<PriceModel>(context);
 
-                    var priceModels = await repository.FindAsync(x =>
-                        (isInstrumentOwnerEmpty || x.InstrumentOwner.Name == request.InstrumentOwner) &&
-                        (isInstrumentEmpty || x.Instrument.Name == request.Instrument) &&
-                        (isPortfolioEmpty || x.Portfolio.Name == request.Portfolio) &&
-                        x.Date >= start && x.Date < end);
+                    var priceModels = await repository.FindAsync(
+                        x => x.Portfolio.Name == request.Portfolio &&
+                             x.Date >= start && x.Date < end);
 
                     if (!priceModels.Any())
                     {
@@ -88,7 +79,23 @@ namespace SC.DevChallenge.Api.MediatorRequests
                             });
                     }
 
-                    return new AveragePriceModel(start, priceModels.Select(x => x.Price).Average());
+                    var (q1, q2, q3) = priceModels.Select(x => x.Price).TakeQuartiles();
+
+                    var q1Average = priceModels.Where(x => x.Price <= q1)
+                        .Average(p => p.Price);
+                    var q3Average = priceModels.Where(x => x.Price >= q2 && x.Price <= q3)
+                        .Average(p => p.Price);
+
+                    var iqr = q3Average - q1Average;
+
+                    var lowest = q1Average - 1.5m * iqr;
+                    var highest = q3Average + 1.5m * iqr;
+
+                    var average = priceModels
+                        .Where(x => x.Price >= lowest && x.Price <= highest)
+                        .Average(x => x.Price);
+
+                    return new BenchmarkModel(start, average);
                 }
             }
             catch (FormatException fex)
