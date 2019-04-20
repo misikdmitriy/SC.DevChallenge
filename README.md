@@ -7,24 +7,24 @@
 ## Swagger
 Swagger available using next [link](http://localhost:8080/swagger)
 ## Alternative way to start service
-1. Install .NET Core SDK 2.1
-2. Run `dotnet run --urls http://*:8080 --no-launch-profile` in folder BackendFinal.Api
+1. Install .NET Core SDK 2.2
+2. Run `dotnet run --urls http://*:8080 --no-launch-profile` in folder SC.DevChallenge.Api
 # How to start unit tests
 ## Requirements
 - Docker with Linux containers support
 ## Start unit tests
 1. Run `docker-compose up unit`
 ## Alternative way to start unit tests
-1. Install .NET Core SDK 2.1
-2. Run `dotnet test` in folder BackendFinal.UnitTests
+1. Install .NET Core SDK 2.2
+2. Run `dotnet test` in folder SC.DevChallenge.UnitTests
 # How to start integration tests
 ## Requirements
 - Docker with Linux containers support
 ## Start unit tests
 1. Run `docker-compose up integration`
 ## Alternative way to start unit tests
-1. Install .NET Core SDK 2.1
-2. Run `dotnet test` in folder BackendFinal.IntegrationTests
+1. Install .NET Core SDK 2.2
+2. Run `dotnet test` in folder SC.DevChallenge.IntegrationTests
 # Notes
 SCV parsed while service started only once. <br />
 To update data first update CSV file and after recreate DB. <br />
