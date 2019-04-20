@@ -24,5 +24,21 @@ namespace SC.DevChallenge.Core.Extensions
 
             return (sorted[q1], sorted[q2], sorted[q3]);
         }
+
+        public static decimal CountBenchmark(this IEnumerable<decimal> collection)
+        {
+            var array = collection.ToArray();
+
+            var (q1, _, q3) = array.TakeQuartiles();
+
+            var iqr = q3 - q1;
+
+            var lowest = q1 - 1.5m * iqr;
+            var highest = q3 + 1.5m * iqr;
+
+            return array
+                .Where(x => x >= lowest && x <= highest)
+                .Average();
+        }
     }
 }

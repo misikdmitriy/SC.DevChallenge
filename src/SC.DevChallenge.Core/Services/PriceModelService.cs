@@ -70,16 +70,7 @@ namespace SC.DevChallenge.Core.Services
                 return null;
             }
 
-            var (q1, _, q3) = priceModels.Select(x => x.Price).TakeQuartiles();
-
-            var iqr = q3 - q1;
-
-            var lowest = q1 - 1.5m * iqr;
-            var highest = q3 + 1.5m * iqr;
-
-            return priceModels
-                .Where(x => x.Price >= lowest && x.Price <= highest)
-                .Average(x => x.Price);
+            return priceModels.Select(x => x.Price).CountBenchmark();
         }
 
         private (DateTime, DateTime) GetTimeSlotScope(int timeSlot)

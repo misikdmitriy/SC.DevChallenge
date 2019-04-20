@@ -68,12 +68,14 @@ namespace SC.DevChallenge.IntegrationTests
 			{
 				new InstrumentOwner {Name = "owner1"},
 				new InstrumentOwner {Name = "owner2"},
-			};
+				new InstrumentOwner {Name = "owner3"},
+            };
 			var instruments = new[]
 			{
 				new Instrument {Name = "instrument1"},
 				new Instrument {Name = "instrument2"},
-			};
+				new Instrument {Name = "instrument3"},
+            };
 
 			db.Portfolios.AddRange(portfolios);
 			db.InstrumentOwners.AddRange(owners);
@@ -91,7 +93,39 @@ namespace SC.DevChallenge.IntegrationTests
 					Date = new DateTime(2018, 1, 1, 0, 0, 0),
 					Price = 1.00m
 				},
-				new PriceModel
+                new PriceModel
+                {
+                    InstrumentId = instruments[2].Id,
+                    InstrumentOwnerId = owners[2].Id,
+                    PortfolioId = portfolios[0].Id,
+                    Date = new DateTime(2018, 1, 1, 1, 0, 0),
+                    Price = 2.00m
+                },
+                new PriceModel
+                {
+                    InstrumentId = instruments[2].Id,
+                    InstrumentOwnerId = owners[2].Id,
+                    PortfolioId = portfolios[0].Id,
+                    Date = new DateTime(2018, 1, 1, 1, 5, 0),
+                    Price = 20.00m
+                },
+                new PriceModel
+                {
+                    InstrumentId = instruments[2].Id,
+                    InstrumentOwnerId = owners[2].Id,
+                    PortfolioId = portfolios[0].Id,
+                    Date = new DateTime(2018, 1, 1, 1, 6, 0),
+                    Price = 15.00m
+                },
+                new PriceModel
+                {
+                    InstrumentId = instruments[2].Id,
+                    InstrumentOwnerId = owners[2].Id,
+                    PortfolioId = portfolios[0].Id,
+                    Date = new DateTime(2018, 1, 1, 1, 7, 0),
+                    Price = 150.00m
+                },
+                new PriceModel
 				{
 					InstrumentId = instruments[0].Id,
 					InstrumentOwnerId = owners[0].Id,

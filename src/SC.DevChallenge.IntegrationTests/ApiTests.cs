@@ -20,10 +20,10 @@ namespace SC.DevChallenge.IntegrationTests
 		}
 
 		[Fact]
-		public async Task ApiShouldReturnCorrectModel1()
+		public async Task AverageApiShouldReturnCorrectModel1()
 		{
 			// Arrange
-			var expected = new AveragePriceModel
+			var expected = new TestPriceModel
 			{
 				Price = 1.33m,
 				Date = new DateTime(2018, 1, 1, 0, 0, 0)
@@ -36,7 +36,7 @@ namespace SC.DevChallenge.IntegrationTests
 				response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
 				var content = await response.Content.ReadAsStringAsync();
-				var result = JsonConvert.DeserializeObject<AveragePriceModel>(content);
+				var result = JsonConvert.DeserializeObject<TestPriceModel>(content);
 
 				result.Date.ShouldBe(expected.Date);
 				result.Price.ShouldBe(expected.Price);
@@ -44,10 +44,10 @@ namespace SC.DevChallenge.IntegrationTests
 		}
 
 		[Fact]
-		public async Task ApiShouldReturnCorrectModel2()
+		public async Task AverageApiShouldReturnCorrectModel2()
 		{
 			// Arrange
-			var expected = new AveragePriceModel
+			var expected = new TestPriceModel
 			{
 				Price = 2.00m,
 				Date = new DateTime(2018, 1, 1, 0, 0, 0)
@@ -60,7 +60,7 @@ namespace SC.DevChallenge.IntegrationTests
 				response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
 				var content = await response.Content.ReadAsStringAsync();
-				var result = JsonConvert.DeserializeObject<AveragePriceModel>(content);
+				var result = JsonConvert.DeserializeObject<TestPriceModel>(content);
 
 				result.Date.ShouldBe(expected.Date);
 				result.Price.ShouldBe(expected.Price);
@@ -68,7 +68,7 @@ namespace SC.DevChallenge.IntegrationTests
 		}
 
 		[Fact]
-		public async Task ApiShouldReturnBadRequestInCaseIfDateIsIncorrect()
+		public async Task AverageApiShouldReturnBadRequestInCaseIfDateIsIncorrect()
 		{
 			// Arrange
 			// Act
@@ -80,7 +80,7 @@ namespace SC.DevChallenge.IntegrationTests
 		}
 
 		[Fact]
-		public async Task ApiShouldReturnNotFoundIfNoPriceForThisPeriod()
+		public async Task AverageApiShouldReturnNotFoundIfNoPriceForThisPeriod()
 		{
 			// Arrange
 			// Act
@@ -92,7 +92,7 @@ namespace SC.DevChallenge.IntegrationTests
 		}
 
 		[Fact]
-		public async Task ApiShouldReturnBadRequestIfNoFilterProvided()
+		public async Task AverageApiShouldReturnBadRequestIfNoFilterProvided()
 		{
 			// Arrange
 			// Act
@@ -104,7 +104,7 @@ namespace SC.DevChallenge.IntegrationTests
 		}
 
 		[Fact]
-		public async Task ApiShouldReturnBadRequestIfDateNotProvided()
+		public async Task AverageApiShouldReturnBadRequestIfDateNotProvided()
 		{
 			// Arrange
 			// Act
@@ -114,5 +114,64 @@ namespace SC.DevChallenge.IntegrationTests
 				response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 			}
 		}
-	}
+
+        [Fact]
+        public async Task BenchmarkApiShouldReturnCorrectModel()
+        {
+            // Arrange
+            var expected = new TestPriceModel
+            {
+                Price = 5.63m,
+                Date = new DateTime(2018, 1, 1, 0, 0, 0)
+            };
+
+            // Act
+            using (var response = await _client.GetAsync("api/prices/benchmark?portfolio=portfolio1&date=01%2F01%2F2018%2000%3A00%3A00"))
+            {
+                response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TestPriceModel>(content);
+
+                result.Date.ShouldBe(expected.Date);
+                result.Price.ShouldBe(expected.Price);
+            }
+        }
+
+        [Fact]
+        public async Task BenchmarkApiShouldReturnBadRequestInCaseIfDateIsIncorrect()
+        {
+            // Arrange
+            // Act
+            using (var response = await _client.GetAsync("api/prices/benchmark?portfolio=portfolio1&date=01%2F01%2F2017%2000%3A00%3A00"))
+            {
+                // Assert
+                response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            }
+        }
+
+        [Fact]
+        public async Task BenchmarkApiShouldReturnNotFoundIfNoPriceForThisPeriod()
+        {
+            // Arrange
+            // Act
+            using (var response = await _client.GetAsync("api/prices/benchmark?portfolio=portfolio1&date=01%2F01%2F2020%2000%3A00%3A00"))
+            {
+                // Assert
+                response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            }
+        }
+
+        [Fact]
+        public async Task BenchmarkApiShouldReturnBadRequestIfPortfolioIsNotProvided()
+        {
+            // Arrange
+            // Act
+            using (var response = await _client.GetAsync("api/prices/benchmark?date=01%2F01%2F2018%2000%3A00%3A00"))
+            {
+                // Assert
+                response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            }
+        }
+    }
 }
