@@ -18,6 +18,8 @@ namespace SC.DevChallenge.Api.Filters
                 {
                     message = fex.Message
                 });
+
+                context.ExceptionHandled = true;
             }
             else if (exception is ArgumentOutOfRangeException aex)
             {
@@ -26,6 +28,8 @@ namespace SC.DevChallenge.Api.Filters
                     message = aex.Message,
                     actual = aex.ActualValue
                 });
+
+                context.ExceptionHandled = true;
             }
             else if (exception is ArgumentNullException ane)
             {
@@ -33,6 +37,8 @@ namespace SC.DevChallenge.Api.Filters
                 {
                     message = ane.Message,
                 });
+
+                context.ExceptionHandled = true;
             }
             else if (exception is ArgumentException ae)
             {
@@ -40,6 +46,8 @@ namespace SC.DevChallenge.Api.Filters
                 {
                     message = ae.Message
                 });
+
+                context.ExceptionHandled = true;
             }
             else if (exception is PriceModelAbsentException pmae)
             {
@@ -48,6 +56,8 @@ namespace SC.DevChallenge.Api.Filters
                     message = "No price models",
                     date = pmae.Date
                 });
+
+                context.ExceptionHandled = true;
             }
         }
     }
