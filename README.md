@@ -27,8 +27,9 @@ Swagger available using next [link](http://localhost:8080/swagger)
 2. Run `dotnet test` in folder SC.DevChallenge.IntegrationTests
 # Notes
 SCV parsed while service started only once. <br />
-To update data first update CSV file and after recreate DB. <br />
+To update data first update CSV file and afterward drop DB data. <br />
 Data adds to DB during single transaction. <br />
-In case if data is incorrect whole data won't be added to DB. <br />
+In case if data is incorrect (at least one row) all data won't be added to DB. <br />
 CSV parsing occurs only when table dbo.PriceModels is empty. <br />
 SCV parsing is long process (wait about 5 mins). <br />
+API described on Swagger page <br />
