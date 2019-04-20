@@ -97,34 +97,56 @@ namespace SC.DevChallenge.Api.MediatorRequests
                         });
                 }
 
+                if (timeSlotsCount == 1)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest,
+                        new
+                        {
+                            message = "Time interval is too short. " +
+                                      "Use instead 'benchmark' endpoint",
+                        });
+                }
+
+                var frame = timeSlotsCount / request.ResultPoints;
+                var rest = timeSlotsCount % request.ResultPoints;
+
                 var result = new List<ApiPriceModel>();
+
+                var leftTimeSlot = startTimeSlot;
 
                 for (var i = 0; i < request.ResultPoints; i++)
                 {
-                    var leftTimeSlot = startTimeSlot + i * timeSlotsCount / request.ResultPoints;
-                    var rightTimeSlot = startTimeSlot + (i + 1) * timeSlotsCount / request.ResultPoints;
+                    var rightTimeSlot = leftTimeSlot + frame;
 
-                    var averages = new List<decimal>();
+                    if (rest > 0)
+                    {
+                        ++rightTimeSlot;
+                        --rest;
+                    }
+
+                    var benchmarks = new List<decimal>();
                     for (var j = leftTimeSlot; j < rightTimeSlot; j++)
                     {
                         var start = _converter.GetTimeSlotStartDate(j);
                         var end = _converter.GetTimeSlotStartDate(j + 1);
 
-                        var average = await _priceModelService.GetAverage(start, end,
+                        var benchmark = await _priceModelService.GetBenchmark(start, end,
                             portfolio: request.Portfolio);
 
-                        if (average.HasValue)
+                        if (benchmark.HasValue)
                         {
-                            averages.Add(average.Value);
+                            benchmarks.Add(benchmark.Value);
                         }
                     }
 
                     var date = _converter.GetTimeSlotStartDate(rightTimeSlot - 1);
 
                     var priceModel = new ApiPriceModel(date,
-                        averages.CountBenchmark());
+                        benchmarks.Average());
 
                     result.Add(priceModel);
+
+                    leftTimeSlot = rightTimeSlot;
                 }
 
                 return result.ToArray();
