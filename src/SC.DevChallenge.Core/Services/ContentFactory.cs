@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -43,62 +44,19 @@ namespace SC.DevChallenge.Core.Services
 					conn.Open();
 				}
 
-				using (var transaction = conn.BeginTransaction())
-				{
-					ParseCsv(filepath, conn, transaction);
+				var fullPath = new FileInfo(filepath).FullName;
 
-					transaction.Commit();
-				}
-			}
-
-			_logger.LogInformation("CSV parsing successfully finished");
-		}
-
-		private void ParseCsv(string inputPath, DbConnection conn, DbTransaction transaction)
-		{
-			var command = string.Empty;
-
-			using (var stream = Assembly.GetExecutingAssembly()
-				.GetManifestResourceStream("SC.DevChallenge.Core.Scripts.script.sql"))
-			using (var reader = new StreamReader(stream))
-			{
-				command = reader.ReadToEnd();
-			}
-
-			using (var file = new StreamReader(inputPath))
-			{
-				if (file.EndOfStream)
-				{
-					return;
-				}
-
-				file.ReadLine();
-
-				if (file.EndOfStream)
-				{
-					return;
-				}
-			}
-
-			var lines = File.ReadLines(inputPath);
-
-			foreach (var line in lines.Skip(1))
-			{
-				var separated = line.Split(',');
-
+				using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SC.DevChallenge.Core.Scripts.script.sql"))
+				using (var reader = new StreamReader(stream))
 				using (var cmd = conn.CreateCommand())
 				{
-					cmd.Transaction = transaction;
-					cmd.CommandText = command
-						.Replace("'portfolio'", $"'{separated[0]}'")
-						.Replace("'owner'", $"'{separated[1]}'")
-						.Replace("'instrument'", $"'{separated[2]}'")
-						.Replace("'date'", $"'{separated[3]}'")
-						.Replace("'price'", separated[4]);
+					cmd.CommandText = reader.ReadToEnd().Replace("@path", fullPath);
 
 					cmd.ExecuteNonQuery();
 				}
 			}
+
+			_logger.LogInformation("CSV parsing successfully finished");
 		}
 	}
 }

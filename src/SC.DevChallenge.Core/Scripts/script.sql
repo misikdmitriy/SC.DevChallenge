@@ -1,28 +1,28 @@
-﻿DECLARE @owner VARCHAR(MAX) = 'owner'
-DECLARE @instrument VARCHAR(MAX) = 'instrument'
-DECLARE @portfolio VARCHAR(MAX) = 'portfolio'
+﻿CREATE TABLE #priceModels (
+  [Portfolio] VARCHAR(MAX),
+  [Owner] VARCHAR(MAX),  
+  [Instrument] VARCHAR(MAX),
+  [Date] VARCHAR(MAX),
+  Price DECIMAL(5, 2)
+)
 
-DECLARE @ownerId INT SELECT @ownerId = Id FROM [dbo].[InstrumentOwners] WHERE [Name] = @owner
-DECLARE @instrumentId INT SELECT @instrumentId = Id FROM [dbo].[Instruments] WHERE [Name] = @instrument
-DECLARE @portfolioId INT SELECT @portfolioId = Id FROM [dbo].[Portfolios] WHERE [Name] = @portfolio
+BULK INSERT #priceModels
+FROM '@path'
+WITH
+(
+  FIRSTROW = 2,
+  DATAFILETYPE='char',
+  FIELDTERMINATOR = ',',
+  ROWTERMINATOR = '\n'
+)
 
-IF @ownerId IS NULL 
-	BEGIN
-		INSERT INTO [dbo].[InstrumentOwners]([Name]) VALUES(@owner)
-		SELECT @ownerId = Id FROM [dbo].[InstrumentOwners] WHERE [Name] = @owner
-	END
-
-IF @instrumentId IS NULL 
-	BEGIN
-		INSERT INTO [dbo].[Instruments]([Name]) VALUES(@instrument)
-		SELECT @instrumentId = Id FROM [dbo].[Instruments] WHERE [Name] = @instrument
-	END
-
-IF @portfolioId IS NULL 
-	BEGIN
-		INSERT INTO [dbo].[Portfolios]([Name]) VALUES(@portfolio)
-		SELECT @portfolioId = Id FROM [dbo].[Portfolios] WHERE [Name] = @portfolio
-	END
+INSERT INTO [dbo].[InstrumentOwners] SELECT [Owner] FROM #priceModels GROUP BY [Owner]
+INSERT INTO [dbo].[Instruments] SELECT [Instrument] FROM #priceModels GROUP BY [Instrument]
+INSERT INTO [dbo].[Portfolios] SELECT [Portfolio] FROM #priceModels GROUP BY [Portfolio]
 
 INSERT INTO [dbo].[PriceModels]([PortfolioId], [InstrumentOwnerId], [InstrumentId], [Date], [Price])
-	VALUES (@portfolioId, @ownerId, @instrumentId, CONVERT(datetime, 'date', 103), 'price')
+	SELECT [PortfolioId] = p.[Id], [InstrumentOwnerId] = o.[Id], [InstrumentId] = i.[Id], [Date] = CONVERT(datetime, m.[Date], 103), [Price] = m.Price
+	FROM #priceModels AS m, [dbo].[InstrumentOwners] AS o, [dbo].[Instruments] AS i, [dbo].[Portfolios] AS p
+	WHERE m.[Portfolio] = p.[Name] AND m.[Owner] = o.[Name] AND m.[Instrument] = i.[Name]
+
+DROP TABLE #priceModels
