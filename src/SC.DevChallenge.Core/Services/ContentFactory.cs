@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Data.Common;
+﻿using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -50,6 +48,9 @@ namespace SC.DevChallenge.Core.Services
 				using (var reader = new StreamReader(stream))
 				using (var cmd = conn.CreateCommand())
 				{
+					// 'bulk insert' not work for linux
+					// know issue
+					// https://stackoverflow.com/questions/41393887/sql-server-on-linux-bulk-import-error
 					cmd.CommandText = reader.ReadToEnd().Replace("@path", fullPath);
 
 					cmd.ExecuteNonQuery();
